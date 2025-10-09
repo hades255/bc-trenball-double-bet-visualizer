@@ -5,7 +5,7 @@ export const RenderItems = ({ structuredData }) => {
   return (
     <div
       style={{
-        border: "1px solid #ddd",
+        border: "1px solid #dddddd4d",
         padding: 10,
       }}
     >
@@ -19,14 +19,14 @@ export const RenderItems = ({ structuredData }) => {
           backgroundImage: `
             repeating-linear-gradient(
                 to bottom,
-                lightgray,
-                lightgray 1px,
+                #2f2f2f,
+                #2f2f2f 1px,
                 transparent 1px,
                 transparent 26px,
-                lightgray 26px,
-                lightgray 27px,
-                lightgray 27px,
-                lightgray 52px
+                #2f2f2f 26px,
+                #2f2f2f 27px,
+                #2f2f2f 27px,
+                #2f2f2f 52px
             )
           `,
           backgroundSize: "100% 52px",
@@ -53,19 +53,19 @@ export const RenderItems = ({ structuredData }) => {
 };
 
 const RenderItem = ({ item }) => {
+  const title = item.betColor
+    ? `\nBet Amount: ${item.betAmount}\nProfit: ${item.profit}`
+    : ``;
+
   return (
     <div
-      title={`Round ${item.roundId}\nColor: ${item.color}\nMultiplier: ${item.multiplier}`}
+      title={`Round ${item.roundId}\nColor: ${item.color}\nMultiplier: ${item.multiplier}${title}`}
       style={{
         width: 16,
         height: 16,
         borderRadius: "50%",
-        border: `2px solid ${item.betColor ? "pink" : "white"}`,
-        outline: `2px solid ${
-          item.betColor
-            ? colorMap[item.betColor === "moon" ? "moon" : item.betColor]
-            : "lightblue"
-        }`,
+        border: `3px solid ${item.betColor ? "white" : "#0b1020a9"}`,
+        outline: `1px solid ${item.betColor ? "white" : "gray"}`,
         backgroundColor:
           colorMap[item.color === "moon" ? "moon" : item.color] || "lightblue",
       }}

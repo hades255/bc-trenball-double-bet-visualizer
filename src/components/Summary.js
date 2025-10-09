@@ -53,7 +53,7 @@ export const Summary = ({ structuredData }) => {
   return (
     <div
       style={{
-        border: "1px solid #ccc",
+        border: "1px solid #dddddd4d",
         padding: 10,
         marginTop: 10,
         display: "flex",
@@ -89,14 +89,14 @@ export const Summary = ({ structuredData }) => {
             <tr>
               <td>color</td>
               {[...Array(18)].map((_, index) => (
-                <td key={index}>{index + 1}</td>
+                <th key={index}>{index + 1}</th>
               ))}
               <td></td>
             </tr>
             <tr>
               <td>green/moon</td>
               {countConsecutive.gres.map((item, index) => (
-                <td key={index}>{item === 0 ? "" : item}</td>
+                <th key={index}>{item === 0 ? "" : item}</th>
               ))}
               <td>
                 {countConsecutive.gres
@@ -107,7 +107,7 @@ export const Summary = ({ structuredData }) => {
             <tr>
               <td>red</td>
               {countConsecutive.rres.map((item, index) => (
-                <td key={index}>{item === 0 ? "" : item}</td>
+                <th key={index}>{item === 0 ? "" : item}</th>
               ))}
               <td>
                 {countConsecutive.rres
