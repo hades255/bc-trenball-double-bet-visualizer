@@ -83,28 +83,41 @@ export const Summary = ({ structuredData }) => {
           </tr>
         </tbody>
       </table>
-      <table>
-        <tbody>
-          <tr>
-            <td>color</td>
-            {[...Array(18)].map((_, index) => (
-              <td key={index}>{index + 1}</td>
-            ))}
-          </tr>
-          <tr>
-            <td>green/moon</td>
-            {countConsecutive.gres.map((item, index) => (
-              <td key={index}>{item === 0 ? "" : item}</td>
-            ))}
-          </tr>
-          <tr>
-            <td>red</td>
-            {countConsecutive.rres.map((item, index) => (
-              <td key={index}>{item === 0 ? "" : item}</td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+      <div style={{ maxWidth: "100%", overflowX: "auto" }}>
+        <table>
+          <tbody>
+            <tr>
+              <td>color</td>
+              {[...Array(18)].map((_, index) => (
+                <td key={index}>{index + 1}</td>
+              ))}
+              <td></td>
+            </tr>
+            <tr>
+              <td>green/moon</td>
+              {countConsecutive.gres.map((item, index) => (
+                <td key={index}>{item === 0 ? "" : item}</td>
+              ))}
+              <td>
+                {countConsecutive.gres
+                  .map((item, index) => item * (index + 1))
+                  .reduce((a, b) => a + b, 0)}
+              </td>
+            </tr>
+            <tr>
+              <td>red</td>
+              {countConsecutive.rres.map((item, index) => (
+                <td key={index}>{item === 0 ? "" : item}</td>
+              ))}
+              <td>
+                {countConsecutive.rres
+                  .map((item, index) => item * (index + 1))
+                  .reduce((a, b) => a + b, 0)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <table>
         <tbody>
           <tr>

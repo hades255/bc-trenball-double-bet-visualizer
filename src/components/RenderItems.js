@@ -19,12 +19,12 @@ export const RenderItems = ({ structuredData }) => {
           backgroundImage: `
             repeating-linear-gradient(
                 to bottom,
-                darkgray,
-                darkgray 1px,
+                lightgray,
+                lightgray 1px,
                 transparent 1px,
                 transparent 26px,
-                darkgray 26px,
-                darkgray 27px,
+                lightgray 26px,
+                lightgray 27px,
                 lightgray 27px,
                 lightgray 52px
             )

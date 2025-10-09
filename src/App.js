@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { RenderItems } from "./components/RenderItems";
 import { Summary } from "./components/Summary";
+import Container from "./components/Container";
 
 const App = () => {
   const [data, setData] = useState([]);
@@ -76,7 +77,7 @@ const App = () => {
   }, [data]);
 
   return (
-    <div style={{ padding: 20, fontFamily: "Arial, sans-serif" }}>
+    <Container>
       <h2>BC.Game Trenball Visualizer</h2>
       <p>Status: {status}</p>
       <input
@@ -100,7 +101,7 @@ const App = () => {
         <p>No data to visualize yet.</p>
       )}
       {structuredData && <Summary structuredData={structuredData} />}
-    </div>
+    </Container>
   );
 };
 
