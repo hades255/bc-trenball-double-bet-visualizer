@@ -56,10 +56,11 @@ const RenderItem = ({ item }) => {
   const title = item.betColor
     ? `\nBet Amount: ${item.betAmount}\nProfit: ${item.profit}`
     : ``;
+  const dt = item.dt ? `\n${new Date(Number(item.dt)).toLocaleString()}` : ``;
 
   return (
     <div
-      title={`Round ${item.roundId}\nColor: ${item.color}\nMultiplier: ${item.multiplier}${title}`}
+      title={`Round ${item.roundId}\nColor: ${item.color}\nMultiplier: ${item.multiplier}${title}${dt}`}
       style={{
         width: 16,
         height: 16,

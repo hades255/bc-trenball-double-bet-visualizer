@@ -96,7 +96,14 @@ export const Summary = ({ structuredData }) => {
             <tr>
               <td>green/moon</td>
               {countConsecutive.gres.map((item, index) => (
-                <th key={index}>{item === 0 ? "" : item}</th>
+                <th
+                  key={index}
+                  title={countConsecutive.gres
+                    .filter((_, _index) => _index >= index)
+                    .reduce((a, b) => a + b, 0)}
+                >
+                  {item === 0 ? "" : item}
+                </th>
               ))}
               <td>
                 {countConsecutive.gres
@@ -107,7 +114,14 @@ export const Summary = ({ structuredData }) => {
             <tr>
               <td>red</td>
               {countConsecutive.rres.map((item, index) => (
-                <th key={index}>{item === 0 ? "" : item}</th>
+                <th
+                  key={index}
+                  title={countConsecutive.rres
+                    .filter((_, _index) => _index >= index)
+                    .reduce((a, b) => a + b, 0)}
+                >
+                  {item === 0 ? "" : item}
+                </th>
               ))}
               <td>
                 {countConsecutive.rres
