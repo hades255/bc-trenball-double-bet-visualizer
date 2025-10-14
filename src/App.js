@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { RenderItems } from "./components/RenderItems";
 import { Summary } from "./components/Summary";
 import Container from "./components/Container";
 
@@ -95,11 +94,6 @@ const App = () => {
       >
         Export Final JSON
       </button>
-      {structuredData.length > 0 ? (
-        <RenderItems structuredData={structuredData} />
-      ) : (
-        <p>No data to visualize yet.</p>
-      )}
       {structuredData && <Summary structuredData={structuredData} />}
     </Container>
   );

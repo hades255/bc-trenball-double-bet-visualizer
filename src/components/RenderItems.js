@@ -54,7 +54,9 @@ export const RenderItems = ({ structuredData }) => {
 
 const RenderItem = ({ item }) => {
   const title = item.betColor
-    ? `\nBet Amount: ${item.betAmount}\nProfit: ${item.profit}`
+    ? `\nBet Color: ${item.betColor}\nBet Amount: ${item.betAmount}\n${
+        item.won ? "Won" : "Lose"
+      } Profit: ${item.profit}`
     : ``;
   const dt = item.dt ? `\n${new Date(Number(item.dt)).toLocaleString()}` : ``;
 
@@ -65,7 +67,9 @@ const RenderItem = ({ item }) => {
         width: 16,
         height: 16,
         borderRadius: "50%",
-        border: `3px solid ${item.betColor ? "white" : "#0b1020a9"}`,
+        border: `3px solid ${
+          item.betColor ? (item.won ? "white" : "black") : "#0b1020a9"
+        }`,
         outline: `1px solid ${item.betColor ? "white" : "gray"}`,
         backgroundColor:
           colorMap[item.color === "moon" ? "moon" : item.color] || "lightblue",

@@ -1,12 +1,17 @@
 import React, { useState } from "react";
+import { RenderItems } from "./RenderItems";
 import "./Summary.css";
 
 export const Summary = ({ structuredData }) => {
+  const [current, setCurrent] = useState(0);
   const [limit, setLimit] = useState(20);
 
   if (!structuredData || !structuredData.length) return <p>No data</p>;
 
-  const limited = structuredData.slice(-limit);
+  const limited = structuredData.slice(
+    Math.max(structuredData.length - limit * current - limit, 0),
+    structuredData.length - limit * current
+  );
 
   // Count colors
   let red = 0,
@@ -46,8 +51,23 @@ export const Summary = ({ structuredData }) => {
   const countConsecutive = calculateCountConsecutive();
 
   const handleLimit = (n) => {
-    if (n === "max") setLimit(structuredData.length);
-    else setLimit(n);
+    if (n === "max") {
+      setCurrent(0);
+      setLimit(structuredData.length);
+    } else {
+      setCurrent(Math.floor((limit * current) / n));
+      setLimit(n);
+    }
+  };
+
+  const handleClickPrev = () => {
+    setCurrent(
+      current * limit + limit < structuredData.length ? current + 1 : current
+    );
+  };
+
+  const handleClickNext = () => {
+    setCurrent(current > 0 ? current - 1 : 0);
   };
 
   return (
@@ -56,20 +76,33 @@ export const Summary = ({ structuredData }) => {
         border: "1px solid #dddddd4d",
         padding: 10,
         marginTop: 10,
+        marginBottom: 10,
         display: "flex",
         flexDirection: "column",
         gap: 12,
       }}
     >
-      <h3>Summary (last {limit})</h3>
+      <h3>
+        Summary ({Math.max(structuredData.length - limit * current - limit, 0)}
+        {" to "}
+        {structuredData.length - current * limit})
+      </h3>
       <div style={{ display: "flex", gap: 8 }}>
-        {[10, 20, 50, 100].map((n) => (
-          <button key={n} onClick={() => handleLimit(n)}>
+        {[10, 20, 50, 100, 1000, 1500, 3000].map((n) => (
+          <button
+            key={n}
+            onClick={() => handleLimit(n)}
+            style={limit === n ? { borderColor: "white" } : {}}
+          >
             {n}
           </button>
         ))}
         <button onClick={() => handleLimit("max")}>Max</button>
+        <button onClick={handleClickPrev}>Prev</button>
+        <button onClick={handleClickNext}>Next</button>
       </div>
+
+      <RenderItems structuredData={limited} />
 
       <table>
         <tbody>
@@ -80,6 +113,18 @@ export const Summary = ({ structuredData }) => {
             <td>{red}</td>
             <td>moon</td>
             <td>{moon}</td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <tbody>
+          <tr>
+            <td>total bet</td>
+            <td>{totalBet}</td>
+            <td>win</td>
+            <td>{totalWin}</td>
+            <td>earn</td>
+            <td>{earn.toFixed(8)}</td>
           </tr>
         </tbody>
       </table>
@@ -132,18 +177,109 @@ export const Summary = ({ structuredData }) => {
           </tbody>
         </table>
       </div>
-      <table>
-        <tbody>
-          <tr>
-            <td>total bet</td>
-            <td>{totalBet}</td>
-            <td>win</td>
-            <td>{totalWin}</td>
-            <td>earn</td>
-            <td>{earn.toFixed(8)}</td>
-          </tr>
-        </tbody>
-      </table>
+      <DetailView data={countConsecutive} />
     </div>
   );
 };
+
+function DetailView({ data }) {
+  if (!data || !data.gres || !data.rres) return <></>;
+
+  return (
+    <>
+      {true && (
+        <table>
+          <thead>
+            <tr>
+              <th>count</th>
+              <th>bet</th>
+              <th>red win</th>
+              <th>profit</th>
+              <th>green win</th>
+              <th>profit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.gres.map(
+              (item, index) =>
+                index < 17 && (
+                  <DetailViewItem
+                    color={"green"}
+                    data={item}
+                    nextData={data.gres
+                      .filter((_, _index) => _index >= index + 1)
+                      .reduce((a, b) => a + b, 0)}
+                    count={index + 1}
+                    key={index}
+                  />
+                )
+            )}
+          </tbody>
+        </table>
+      )}
+      {true && (
+        <table>
+          <thead>
+            <tr>
+              <th>count</th>
+              <th>bet</th>
+              <th>red win</th>
+              <th>profit</th>
+              <th>green win</th>
+              <th>profit</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.rres.map(
+              (item, index) =>
+                index < 17 && (
+                  <DetailViewItem
+                    color={"red"}
+                    data={data.rres
+                      .filter((_, _index) => _index >= index + 1)
+                      .reduce((a, b) => a + b, 0)}
+                    nextData={item}
+                    count={index + 1}
+                    key={index}
+                  />
+                )
+            )}
+          </tbody>
+        </table>
+      )}
+    </>
+  );
+}
+
+function DetailViewItem({ color, count, data, nextData }) {
+  if (data === 0 && nextData === 0) return <></>;
+  const bet = data + nextData;
+  const rprofit = floatToFixed(data * 0.96 - nextData);
+  const gprofit = nextData - data;
+  return (
+    <tr>
+      <th style={{ color }}>{count}</th>
+      <td>{bet}</td>
+      <td>{data}</td>
+      <td
+        style={{
+          backgroundColor: rprofit > 0.0 ? "#800" : "transparent",
+        }}
+      >
+        {rprofit}
+      </td>
+      <td>{nextData}</td>
+      <td
+        style={{
+          backgroundColor: gprofit > 0.0 ? "#080" : "transparent",
+        }}
+      >
+        {gprofit}
+      </td>
+    </tr>
+  );
+}
+
+function floatToFixed(data) {
+  return Math.round(data * 100) / 100;
+}
