@@ -3,20 +3,22 @@ import { colorMap } from "../constants";
 
 export const RenderItems = ({ structuredData }) => {
   return (
-    <div
-      style={{
-        border: "1px solid #dddddd4d",
-        padding: 10,
-      }}
-    >
+    <details open>
+      <summary>graph view</summary>
       <div
         style={{
-          display: "flex",
-          gap: "6px",
-          alignItems: "start",
-          overflowX: "auto",
-          padding: "3px 10px",
-          backgroundImage: `
+          border: "1px solid #dddddd4d",
+          padding: 10,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            gap: "6px",
+            alignItems: "start",
+            overflowX: "auto",
+            padding: "3px 10px",
+            backgroundImage: `
             repeating-linear-gradient(
                 to bottom,
                 #2f2f2f,
@@ -29,26 +31,27 @@ export const RenderItems = ({ structuredData }) => {
                 #2f2f2f 52px
             )
           `,
-          backgroundSize: "100% 52px",
-        }}
-      >
-        {structuredData.map((group, colIdx) => (
-          <div
-            key={colIdx}
-            style={{
-              display: "grid",
-              gridAutoRows: "20px",
-              rowGap: "6px",
-              justifyItems: "center",
-            }}
-          >
-            {group.map((item) => (
-              <RenderItem key={item.roundId} item={item} />
-            ))}
-          </div>
-        ))}
+            backgroundSize: "100% 52px",
+          }}
+        >
+          {structuredData.map((group, colIdx) => (
+            <div
+              key={colIdx}
+              style={{
+                display: "grid",
+                gridAutoRows: "20px",
+                rowGap: "6px",
+                justifyItems: "center",
+              }}
+            >
+              {group.map((item) => (
+                <RenderItem key={item.roundId} item={item} />
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+    </details>
   );
 };
 

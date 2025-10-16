@@ -19,7 +19,9 @@ export const Summary = ({ structuredData }) => {
     moon = 0,
     totalBet = 0,
     totalWin = 0,
-    earn = 0;
+    earn = 0,
+    winHistory = [],
+    profitState = [];
 
   limited.forEach((col) => {
     col.forEach((item) => {
@@ -28,11 +30,24 @@ export const Summary = ({ structuredData }) => {
       else if (item.color === "green") green++;
       if (item.betColor) {
         totalBet++;
-        if (item.won) totalWin++;
+        if (item.won) {
+          totalWin++;
+        }
+        winHistory.push(item);
         earn += item.profit;
       }
     });
   });
+
+  winHistory = winHistory.map((item, index) => ({
+    ...item,
+    state: winHistory
+      .filter((_, _index) => _index <= index)
+      .map((_item) => _item.profit)
+      .reduce((a, b) => a + b, 0),
+  }));
+
+  profitState = winHistory.map((item) => item.state);
 
   const calculateCountConsecutive = () => {
     let gres = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -108,11 +123,13 @@ export const Summary = ({ structuredData }) => {
         <tbody>
           <tr>
             <td>green</td>
-            <td>{green}</td>
+            <th>{green}</th>
             <td>red</td>
-            <td>{red}</td>
+            <th>{red}</th>
             <td>moon</td>
-            <td>{moon}</td>
+            <th>{moon}</th>
+            <td>total</td>
+            <th>{green + red + moon}</th>
           </tr>
         </tbody>
       </table>
@@ -120,11 +137,11 @@ export const Summary = ({ structuredData }) => {
         <tbody>
           <tr>
             <td>total bet</td>
-            <td>{totalBet}</td>
+            <th>{totalBet}</th>
             <td>win</td>
-            <td>{totalWin}</td>
+            <th>{totalWin}</th>
             <td>earn</td>
-            <td>{earn.toFixed(8)}</td>
+            <th>{earn.toFixed(4)}</th>
           </tr>
         </tbody>
       </table>
@@ -132,7 +149,7 @@ export const Summary = ({ structuredData }) => {
         <table>
           <tbody>
             <tr>
-              <td>color</td>
+              <td></td>
               {[...Array(18)].map((_, index) => (
                 <th key={index}>{index + 1}</th>
               ))}
@@ -177,6 +194,57 @@ export const Summary = ({ structuredData }) => {
           </tbody>
         </table>
       </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>profit</td>
+            <th>{floatToFixed(profitState[profitState.length - 1], 3)}</th>
+            <td>min</td>
+            <th>{floatToFixed(Math.min(...profitState), 3)}</th>
+            <td>max</td>
+            <th>{floatToFixed(Math.max(...profitState), 3)}</th>
+          </tr>
+        </tbody>
+      </table>
+      <details>
+        <summary>win history</summary>
+        <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+          <table>
+            <thead>
+              <tr>
+                <td>mult</td>
+                <td>bet</td>
+                <td>profit</td>
+                <td>stick</td>
+                <td></td>
+                <td></td>
+              </tr>
+            </thead>
+            <tbody>
+              {winHistory.map((item, index) => (
+                <tr key={index}>
+                  <td
+                    style={{
+                      backgroundColor:
+                        item.color === "moon" ? "yellow" : item.color,
+                      color: "black",
+                    }}
+                  >
+                    {item.multiplier}
+                  </td>
+                  <td style={{ backgroundColor: item.betColor }}>
+                    {item.betAmount}
+                  </td>
+                  <td>{item.profit}</td>
+                  <td>{item.stick}</td>
+                  <td>{floatToFixed(item.state, 3)}</td>
+                  <td>{new Date(item.dt).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
       <DetailView data={countConsecutive} />
     </div>
   );
@@ -187,66 +255,72 @@ function DetailView({ data }) {
 
   return (
     <>
-      {true && (
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.gres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"green"}
-                    data={item}
-                    nextData={data.gres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      )}
-      {true && (
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.rres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"red"}
-                    data={data.rres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    nextData={item}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      )}
+      <details>
+        <summary>Green</summary>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>count</th>
+                <th>bet</th>
+                <th>red win</th>
+                <th>profit</th>
+                <th>green win</th>
+                <th>profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.gres.map(
+                (item, index) =>
+                  index < 17 && (
+                    <DetailViewItem
+                      color={"green"}
+                      data={item}
+                      nextData={data.gres
+                        .filter((_, _index) => _index >= index + 1)
+                        .reduce((a, b) => a + b, 0)}
+                      count={index + 1}
+                      key={index}
+                    />
+                  )
+              )}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <details open>
+        <summary>Red</summary>
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>count</th>
+                <th>bet</th>
+                <th>red win</th>
+                <th>profit</th>
+                <th>green win</th>
+                <th>profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.rres.map(
+                (item, index) =>
+                  index < 17 && (
+                    <DetailViewItem
+                      color={"red"}
+                      data={data.rres
+                        .filter((_, _index) => _index >= index + 1)
+                        .reduce((a, b) => a + b, 0)}
+                      nextData={item}
+                      count={index + 1}
+                      key={index}
+                    />
+                  )
+              )}
+            </tbody>
+          </table>
+        </div>
+      </details>
     </>
   );
 }
@@ -280,6 +354,6 @@ function DetailViewItem({ color, count, data, nextData }) {
   );
 }
 
-function floatToFixed(data) {
-  return Math.round(data * 100) / 100;
+function floatToFixed(data, count = 2) {
+  return Math.round(data * Math.pow(10, count)) / Math.pow(10, count);
 }
