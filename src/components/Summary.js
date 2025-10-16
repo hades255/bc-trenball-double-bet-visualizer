@@ -141,7 +141,7 @@ export const Summary = ({ structuredData }) => {
             <td>win</td>
             <th>{totalWin}</th>
             <td>earn</td>
-            <th>{earn.toFixed(4)}</th>
+            <th>{floatToFixed(earn, 3)}</th>
           </tr>
         </tbody>
       </table>
@@ -223,18 +223,18 @@ export const Summary = ({ structuredData }) => {
             <tbody>
               {winHistory.map((item, index) => (
                 <tr key={index}>
-                  <td
+                  <th
                     style={{
                       backgroundColor:
                         item.color === "moon" ? "yellow" : item.color,
-                      color: "black",
+                      color: "darkgray",
                     }}
                   >
                     {item.multiplier}
-                  </td>
-                  <td style={{ backgroundColor: item.betColor }}>
+                  </th>
+                  <th style={{ backgroundColor: item.betColor }}>
                     {item.betAmount}
-                  </td>
+                  </th>
                   <td>{item.profit}</td>
                   <td>{item.stick}</td>
                   <td>{floatToFixed(item.state, 3)}</td>
@@ -354,6 +354,6 @@ function DetailViewItem({ color, count, data, nextData }) {
   );
 }
 
-function floatToFixed(data, count = 2) {
+export function floatToFixed(data, count = 2) {
   return Math.round(data * Math.pow(10, count)) / Math.pow(10, count);
 }

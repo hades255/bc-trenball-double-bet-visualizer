@@ -44,8 +44,8 @@ export const RenderItems = ({ structuredData }) => {
                 justifyItems: "center",
               }}
             >
-              {group.map((item) => (
-                <RenderItem key={item.roundId} item={item} />
+              {group.map((item, index) => (
+                <RenderItem key={item?.roundId || index} item={item} />
               ))}
             </div>
           ))}
@@ -71,9 +71,9 @@ const RenderItem = ({ item }) => {
         height: 16,
         borderRadius: "50%",
         border: `3px solid ${
-          item.betColor ? (item.won ? "white" : "black") : "#0b1020a9"
+          item.betColor ? (item.won ? "gold" : "blue") : "#0b1020a9"
         }`,
-        outline: `1px solid ${item.betColor ? "white" : "gray"}`,
+        outline: `1px solid ${item.betColor ? "white" : "black"}`,
         backgroundColor:
           colorMap[item.color === "moon" ? "moon" : item.color] || "lightblue",
       }}
