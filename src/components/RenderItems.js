@@ -1,10 +1,10 @@
 import React from "react";
 import { colorMap } from "../constants";
+import FoldableView from "./FoldableView";
 
 export const RenderItems = ({ structuredData }) => {
   return (
-    <details open>
-      <summary>graph view</summary>
+    <FoldableView title={"graph view"}>
       <div
         style={{
           border: "1px solid #dddddd4d",
@@ -51,7 +51,7 @@ export const RenderItems = ({ structuredData }) => {
           ))}
         </div>
       </div>
-    </details>
+    </FoldableView>
   );
 };
 

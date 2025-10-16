@@ -1,0 +1,34 @@
+.foldable-container {
+  width: 100%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.foldable-button {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.foldable-button:hover .foldable-label {
+  text-decoration: underline;
+}
+
+.foldable-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.foldable-icon.open {
+  transform: rotate(180deg);
+}
+
+.foldable-label {
+  font-weight: 500;
+  font-size: 0.875rem; /* text-sm */
+}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { RenderItems } from "./RenderItems";
 import "./Summary.css";
+import FoldableView from "./FoldableView";
 
 export const Summary = ({ structuredData }) => {
   const [current, setCurrent] = useState(0);
@@ -206,12 +207,12 @@ export const Summary = ({ structuredData }) => {
           </tr>
         </tbody>
       </table>
-      <details>
-        <summary>win history</summary>
+      <FoldableView title={"win history"}>
         <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
           <table>
             <thead>
               <tr>
+                <td></td>
                 <td>mult</td>
                 <td>bet</td>
                 <td>profit</td>
@@ -221,30 +222,30 @@ export const Summary = ({ structuredData }) => {
               </tr>
             </thead>
             <tbody>
-              {winHistory.map((item, index) => (
-                <tr key={index}>
-                  <th
-                    style={{
-                      backgroundColor:
-                        item.color === "moon" ? "yellow" : item.color,
-                      color: "darkgray",
-                    }}
-                  >
-                    {item.multiplier}
-                  </th>
-                  <th style={{ backgroundColor: item.betColor }}>
-                    {item.betAmount}
-                  </th>
-                  <td>{item.profit}</td>
-                  <td>{item.stick}</td>
-                  <td>{floatToFixed(item.state, 3)}</td>
-                  <td>{new Date(item.dt).toLocaleString()}</td>
-                </tr>
-              ))}
+              {winHistory
+                .filter((item) => item.dt)
+                .map((item, index) => (
+                  <tr key={index}>
+                    <td>{index + 1}</td>
+                    <th
+                      style={{
+                        color: item.color === "moon" ? "yellow" : item.color,
+                      }}
+                    >
+                      {item.multiplier}
+                    </th>
+                    <th style={{ color: item.betColor }}>{item.betAmount}</th>
+                    <td>{item.profit}</td>
+                    <td>{item.stick}</td>
+                    <td>{floatToFixed(item.state, 3)}</td>
+                    <td>{new Date(item.dt).toLocaleString()}</td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
-      </details>
+      </FoldableView>
+      <MaxStickView data={limited} />
       <DetailView data={countConsecutive} />
     </div>
   );
@@ -255,8 +256,7 @@ function DetailView({ data }) {
 
   return (
     <>
-      <details>
-        <summary>Green</summary>
+      <FoldableView title={"Green"}>
         <div>
           <table>
             <thead>
@@ -287,9 +287,8 @@ function DetailView({ data }) {
             </tbody>
           </table>
         </div>
-      </details>
-      <details open>
-        <summary>Red</summary>
+      </FoldableView>
+      <FoldableView title={"Red"}>
         <div>
           <table>
             <thead>
@@ -320,7 +319,7 @@ function DetailView({ data }) {
             </tbody>
           </table>
         </div>
-      </details>
+      </FoldableView>
     </>
   );
 }
@@ -351,6 +350,83 @@ function DetailViewItem({ color, count, data, nextData }) {
         {gprofit}
       </td>
     </tr>
+  );
+}
+
+function MaxStickView({ data }) {
+  return (
+    <>
+      <FoldableView title="max sticks">
+        <table style={{ marginBottom: 12 }}>
+          <tbody>
+            <tr>
+              <td>green</td>
+              <td>
+                {
+                  data.filter(
+                    (item) =>
+                      item[0].color !== "red" && item.length >= 8 && item[0].dt
+                  ).length
+                }
+              </td>
+              <td>red</td>
+              <td>
+                {
+                  data.filter(
+                    (item) =>
+                      item[0].color === "red" && item.length >= 12 && item[0].dt
+                  ).length
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+          <table>
+            <tbody>
+              {data
+                .filter(
+                  (item) =>
+                    (item[0].color === "red"
+                      ? item.length >= 12
+                      : item.length >= 8) && item[0].dt
+                )
+                .map((item, index) => (
+                  <MaxStickViewItem key={index} data={item} index={index} />
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </FoldableView>
+    </>
+  );
+}
+
+function MaxStickViewItem({ index, data }) {
+  const bet = data
+    .map((item) => item.betAmount || 0)
+    .reduce((a, b) => a + b, 0);
+
+  const profit = data
+    .map((item) => item.profit || 0)
+    .reduce((a, b) => a + b, 0);
+
+  return (
+    <>
+      <tr>
+        <th>{index + 1}</th>
+        <th
+          style={{
+            color: data[0].color === "moon" ? "green" : data[0].color,
+          }}
+        >
+          {data.length}
+        </th>
+        <th>{floatToFixed(profit, 3)}</th>
+        <th>{floatToFixed(bet, 3)}</th>
+        <td>{new Date(data[0].dt).toLocaleString()}</td>
+      </tr>
+    </>
   );
 }
 
