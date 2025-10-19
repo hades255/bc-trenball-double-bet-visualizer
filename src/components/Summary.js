@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import clsx from "clsx";
 import { RenderItems } from "./RenderItems";
 import FoldableView from "./FoldableView";
 import DateTimeRangeSelector from "./DateTimeRangeSelector";
@@ -7,7 +8,7 @@ import "./Summary.css";
 export const Summary = ({ structuredData }) => {
   const [range, setRange] = useState({ start: "", end: "" });
   const [current, setCurrent] = useState(0);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(3000);
 
   const filtered = useMemo(
     () =>
@@ -39,7 +40,7 @@ export const Summary = ({ structuredData }) => {
 
   const handleDateTimeChange = (newRange) => {
     setCurrent(0);
-    console.log(newRange);
+    setLimit(3000)
     setRange(newRange);
   };
 
@@ -135,12 +136,12 @@ export const Summary = ({ structuredData }) => {
         {filtered.length - current * limit} ({limited.length})
       </h3>
       <DateTimeRangeSelector onChange={handleDateTimeChange} />
-      <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {[10, 20, 50, 100, 1000, 1500, 3000].map((n) => (
           <button
             key={n}
             onClick={() => handleLimit(n)}
-            style={limit === n ? { borderColor: "white" } : {}}
+            className={clsx({ active: limit === n })}
           >
             {n}
           </button>

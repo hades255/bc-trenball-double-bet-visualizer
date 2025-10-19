@@ -28,9 +28,9 @@ const App = () => {
       }
     }
 
-    const sorted = Array.from(roundMap.values()).sort(
-      (a, b) => parseInt(a.roundId) - parseInt(b.roundId)
-    );
+    const sorted = Array.from(roundMap.values())
+      .sort((a, b) => parseInt(a.roundId) - parseInt(b.roundId))
+      .map((item) => ({ ...item, dt: item.dt || 1760022000000 }));
     setData(sorted);
     setStatus(`${sorted.length} rounds loaded.`);
   };
