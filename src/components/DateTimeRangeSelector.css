@@ -1,0 +1,32 @@
+.datetime-range {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.datetime-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.datetime-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.datetime-group input[type="datetime-local"] {
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: border-color 0.2s;
+}
+
+.datetime-group input[type="datetime-local"]:focus {
+  border-color: #007bff;
+  outline: none;
+}

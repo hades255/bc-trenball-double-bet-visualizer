@@ -1,18 +1,49 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { RenderItems } from "./RenderItems";
-import "./Summary.css";
 import FoldableView from "./FoldableView";
+import DateTimeRangeSelector from "./DateTimeRangeSelector";
+import "./Summary.css";
 
 export const Summary = ({ structuredData }) => {
+  const [range, setRange] = useState({ start: "", end: "" });
   const [current, setCurrent] = useState(0);
   const [limit, setLimit] = useState(20);
 
-  if (!structuredData || !structuredData.length) return <p>No data</p>;
-
-  const limited = structuredData.slice(
-    Math.max(structuredData.length - limit * current - limit, 0),
-    structuredData.length - limit * current
+  const filtered = useMemo(
+    () =>
+      structuredData && structuredData.length
+        ? structuredData.filter((item) =>
+            item[0].dt
+              ? (range.start
+                  ? item[0].dt >= new Date(range.start).getTime()
+                  : true) &&
+                (range.end ? item[0].dt < new Date(range.end).getTime() : true)
+              : range.start || range.end
+              ? false
+              : true
+          )
+        : [],
+    [structuredData, range]
   );
+
+  const limited = useMemo(
+    () =>
+      filtered && filtered.length
+        ? filtered.slice(
+            Math.max(filtered.length - limit * current - limit, 0),
+            filtered.length - limit * current
+          )
+        : [],
+    [filtered, limit, current, range]
+  );
+
+  const handleDateTimeChange = (newRange) => {
+    setCurrent(0);
+    console.log(newRange);
+    setRange(newRange);
+  };
+
+  if (!structuredData || !structuredData.length) return <p>No data</p>;
 
   // Count colors
   let red = 0,
@@ -69,7 +100,7 @@ export const Summary = ({ structuredData }) => {
   const handleLimit = (n) => {
     if (n === "max") {
       setCurrent(0);
-      setLimit(structuredData.length);
+      setLimit(filtered.length);
     } else {
       setCurrent(Math.floor((limit * current) / n));
       setLimit(n);
@@ -78,7 +109,7 @@ export const Summary = ({ structuredData }) => {
 
   const handleClickPrev = () => {
     setCurrent(
-      current * limit + limit < structuredData.length ? current + 1 : current
+      current * limit + limit < filtered.length ? current + 1 : current
     );
   };
 
@@ -99,10 +130,11 @@ export const Summary = ({ structuredData }) => {
       }}
     >
       <h3>
-        Summary ({Math.max(structuredData.length - limit * current - limit, 0)}
+        Summary {Math.max(filtered.length - limit * current - limit, 0)}
         {" to "}
-        {structuredData.length - current * limit})
+        {filtered.length - current * limit} ({limited.length})
       </h3>
+      <DateTimeRangeSelector onChange={handleDateTimeChange} />
       <div style={{ display: "flex", gap: 8 }}>
         {[10, 20, 50, 100, 1000, 1500, 3000].map((n) => (
           <button
@@ -131,18 +163,6 @@ export const Summary = ({ structuredData }) => {
             <th>{moon}</th>
             <td>total</td>
             <th>{green + red + moon}</th>
-          </tr>
-        </tbody>
-      </table>
-      <table>
-        <tbody>
-          <tr>
-            <td>total bet</td>
-            <th>{totalBet}</th>
-            <td>win</td>
-            <th>{totalWin}</th>
-            <td>earn</td>
-            <th>{floatToFixed(earn, 3)}</th>
           </tr>
         </tbody>
       </table>
@@ -198,8 +218,16 @@ export const Summary = ({ structuredData }) => {
       <table>
         <tbody>
           <tr>
-            <td>profit</td>
-            <th>{floatToFixed(profitState[profitState.length - 1], 3)}</th>
+            <td>total bet</td>
+            <th>{totalBet}</th>
+            <td>win</td>
+            <th>{totalWin}</th>
+            <td></td>
+            <td> </td>
+          </tr>
+          <tr>
+            <td>earn</td>
+            <th>{floatToFixed(earn, 3)}</th>
             <td>min</td>
             <th>{floatToFixed(Math.min(...profitState), 3)}</th>
             <td>max</td>
@@ -235,7 +263,13 @@ export const Summary = ({ structuredData }) => {
                       {item.multiplier}
                     </th>
                     <th style={{ color: item.betColor }}>{item.betAmount}</th>
-                    <td>{item.profit}</td>
+                    <td
+                      style={{
+                        color: item.won ? "gold" : "white",
+                      }}
+                    >
+                      {item.profit}
+                    </td>
                     <td>{item.stick}</td>
                     <td>{floatToFixed(item.state, 3)}</td>
                     <td>{new Date(item.dt).toLocaleString()}</td>
@@ -354,13 +388,27 @@ function DetailViewItem({ color, count, data, nextData }) {
 }
 
 function MaxStickView({ data }) {
+  const [select, setSelect] = useState(["green", "red"]);
+
+  const handleClickSelectItem = (color) => {
+    if (select.includes(color))
+      setSelect(select.filter((item) => item !== color));
+    else setSelect([...select, color]);
+  };
+
   return (
     <>
-      <FoldableView title="max sticks">
+      <FoldableView title="max sticks" init>
         <table style={{ marginBottom: 12 }}>
           <tbody>
             <tr>
-              <td>green</td>
+              <td
+                className="td-btn"
+                style={{ color: select.includes("green") ? "green" : "white" }}
+                onClick={() => handleClickSelectItem("green")}
+              >
+                green
+              </td>
               <td>
                 {
                   data.filter(
@@ -369,12 +417,18 @@ function MaxStickView({ data }) {
                   ).length
                 }
               </td>
-              <td>red</td>
+              <td
+                className="td-btn"
+                style={{ color: select.includes("red") ? "red" : "white" }}
+                onClick={() => handleClickSelectItem("red")}
+              >
+                red
+              </td>
               <td>
                 {
                   data.filter(
                     (item) =>
-                      item[0].color === "red" && item.length >= 12 && item[0].dt
+                      item[0].color === "red" && item.length >= 9 && item[0].dt
                   ).length
                 }
               </td>
@@ -387,9 +441,13 @@ function MaxStickView({ data }) {
               {data
                 .filter(
                   (item) =>
+                    select.includes(
+                      item[0].color === "moon" ? "green" : item[0].color
+                    ) &&
                     (item[0].color === "red"
-                      ? item.length >= 12
-                      : item.length >= 8) && item[0].dt
+                      ? item.length >= 9
+                      : item.length >= 8) &&
+                    item[0].dt
                 )
                 .map((item, index) => (
                   <MaxStickViewItem key={index} data={item} index={index} />
