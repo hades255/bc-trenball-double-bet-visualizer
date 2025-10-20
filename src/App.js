@@ -30,7 +30,17 @@ const App = () => {
 
     const sorted = Array.from(roundMap.values())
       .sort((a, b) => parseInt(a.roundId) - parseInt(b.roundId))
-      .map((item) => ({ ...item, dt: item.dt || 1760022000000 }));
+      .map((item) => {
+        item.dt = item.dt || 1760022000000;
+        if (item.multiplier) {
+          const match = item.multiplier.match(/-?[\d,]*\.?\d+/);
+          if (match) {
+            const num = parseFloat(match[0]);
+            item.multiplier = num;
+          }
+        }
+        return item;
+      });
     setData(sorted);
     setStatus(`${sorted.length} rounds loaded.`);
   };
@@ -79,21 +89,22 @@ const App = () => {
     <Container>
       <h2>BC.Game Trenball Visualizer</h2>
       <p>Status: {status}</p>
-      <input
-        type="file"
-        accept="application/json"
-        multiple
-        onChange={handleInput}
-        style={{ marginBottom: 16 }}
-      />
-      <br />
-      <button
-        onClick={exportJSON}
-        disabled={!data.length}
-        style={{ marginBottom: 20 }}
-      >
-        Export Final JSON
-      </button>
+      <div>
+        <input
+          type="file"
+          accept="application/json"
+          multiple
+          onChange={handleInput}
+          style={{ marginBottom: 16 }}
+        />
+        <button
+          onClick={exportJSON}
+          disabled={!data.length}
+          style={{ marginBottom: 20 }}
+        >
+          Export Final JSON
+        </button>
+      </div>
       {structuredData && <Summary structuredData={structuredData} />}
     </Container>
   );

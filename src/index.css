@@ -30,3 +30,21 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.flex {
+  display: flex;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.responsible{
+  max-width: 100%;
+  overflow-x: auto;
+}
+.w-full{
+  width: 100%;
+}
+.h-full{
+  height: 100%;
+}

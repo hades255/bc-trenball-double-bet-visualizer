@@ -4,6 +4,7 @@ import { RenderItems } from "./RenderItems";
 import FoldableView from "./FoldableView";
 import DateTimeRangeSelector from "./DateTimeRangeSelector";
 import "./Summary.css";
+import SDetails from "./SDetails";
 
 export const Summary = ({ structuredData }) => {
   const [range, setRange] = useState({ start: "", end: "" });
@@ -35,12 +36,12 @@ export const Summary = ({ structuredData }) => {
             filtered.length - limit * current
           )
         : [],
-    [filtered, limit, current, range]
+    [filtered, limit, current]
   );
 
   const handleDateTimeChange = (newRange) => {
     setCurrent(0);
-    setLimit(3000)
+    setLimit(3000);
     setRange(newRange);
   };
 
@@ -167,7 +168,7 @@ export const Summary = ({ structuredData }) => {
           </tr>
         </tbody>
       </table>
-      <div style={{ maxWidth: "100%", overflowX: "auto" }}>
+      <div className="responsible">
         <table>
           <tbody>
             <tr>
@@ -281,12 +282,12 @@ export const Summary = ({ structuredData }) => {
         </div>
       </FoldableView>
       <MaxStickView data={limited} />
-      <DetailView data={countConsecutive} />
+      <DetailView data={countConsecutive} adata={limited} />
     </div>
   );
 };
 
-function DetailView({ data }) {
+function DetailView({ data, adata }) {
   if (!data || !data.gres || !data.rres) return <></>;
 
   return (
@@ -355,6 +356,9 @@ function DetailView({ data }) {
           </table>
         </div>
       </FoldableView>
+      <FoldableView title={"Red Details"}>
+        <SDetails data={adata} />
+      </FoldableView>
     </>
   );
 }
@@ -399,7 +403,7 @@ function MaxStickView({ data }) {
 
   return (
     <>
-      <FoldableView title="max sticks" init>
+      <FoldableView title="max sticks">
         <table style={{ marginBottom: 12 }}>
           <tbody>
             <tr>
