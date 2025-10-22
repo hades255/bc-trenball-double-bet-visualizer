@@ -32,7 +32,7 @@ const App = () => {
       .sort((a, b) => parseInt(a.roundId) - parseInt(b.roundId))
       .map((item) => {
         item.dt = item.dt || 1760022000000;
-        if (item.multiplier) {
+        if (item.multiplier && isNaN(item.multiplier)) {
           const match = item.multiplier.match(/-?[\d,]*\.?\d+/);
           if (match) {
             const num = parseFloat(match[0]);
@@ -87,7 +87,7 @@ const App = () => {
 
   return (
     <Container>
-      <h2>BC.Game Trenball Visualizer</h2>
+      {/* <h2>BC.Game Trenball Visualizer</h2> */}
       <p>Status: {status}</p>
       <div>
         <input
@@ -105,7 +105,9 @@ const App = () => {
           Export Final JSON
         </button>
       </div>
-      {structuredData && <Summary structuredData={structuredData} />}
+      {structuredData && (
+        <Summary structuredData={structuredData} rawData={data} />
+      )}
     </Container>
   );
 };
