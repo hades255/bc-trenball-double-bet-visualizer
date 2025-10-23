@@ -1,6 +1,7 @@
 import React from "react";
 import { colorMap } from "../constants";
 import FoldableView from "./FoldableView";
+import { floatToFixed } from "./Summary";
 
 export const RenderItems = ({ structuredData }) => {
   return (
@@ -57,9 +58,10 @@ export const RenderItems = ({ structuredData }) => {
 
 const RenderItem = ({ item }) => {
   const title = item.betColor
-    ? `\nBet Color: ${item.betColor}\nBet Amount: ${item.betAmount}\n${
-        item.won ? "Won" : "Lose"
-      } Profit: ${item.profit}`
+    ? `\nBet Color: ${item.betColor}\nBet Amount: ${floatToFixed(
+        item.betAmount,
+        3
+      )}\n${item.won ? "Won" : "Lose"} Profit: ${floatToFixed(item.profit, 3)}`
     : ``;
   const dt = item.dt ? `\n${new Date(Number(item.dt)).toLocaleString()}` : ``;
 
