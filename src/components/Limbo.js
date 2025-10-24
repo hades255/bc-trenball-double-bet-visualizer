@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Summary } from "./trenball/Summary";
+import { Summary } from "./limbo/Summary";
 
-const Trenball = () => {
+const Limbo = () => {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState("No files loaded.");
   const [structuredData, setStructuredData] = useState([]);
@@ -67,11 +67,7 @@ const Trenball = () => {
       const color = item.color === "moon" ? "green" : item.color;
       const roundId = item.roundId;
 
-      if (
-        lastColor !== null &&
-        color === lastColor &&
-        Number(lastRoundId) + 1 === Number(roundId)
-      ) {
+      if (lastColor !== null && color === lastColor) {
         currentRow.push(item);
       } else {
         if (currentRow.length) rows.push(currentRow);
@@ -86,7 +82,7 @@ const Trenball = () => {
 
   return (
     <>
-      <h2>Trenball Visualizer</h2>
+      <h2>Limbo Visualizer</h2>
       <p>Status: {status}</p>
       <div>
         <input
@@ -111,4 +107,4 @@ const Trenball = () => {
   );
 };
 
-export default Trenball;
+export default Limbo;

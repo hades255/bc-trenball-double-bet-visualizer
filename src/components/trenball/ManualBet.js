@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { floatToFixed } from "./Summary";
-import FoldableView from "./FoldableView";
+import FoldableView from "../FoldableView";
 
 const ManualBet = ({ data }) => {
   const [bet, setBet] = useState(1);

@@ -4,8 +4,6 @@ import { RenderItems } from "./RenderItems";
 import FoldableView from "../FoldableView";
 import DateTimeRangeSelector from "../DateTimeRangeSelector";
 import "./Summary.css";
-import SDetails from "./SDetails";
-import ManualBet from "./ManualBet";
 
 export const Summary = ({ structuredData, rawData }) => {
   const [range, setRange] = useState({ start: "", end: "" });
@@ -90,7 +88,7 @@ export const Summary = ({ structuredData, rawData }) => {
     limited.forEach((item) => {
       if (item && item.length > 0) {
         const color = item[0].color;
-        const count = item.length - 1;
+        const count = Math.min(item.length - 1, 17);
         if (color === "red") rres[count]++;
         else gres[count]++;
       }
@@ -169,7 +167,6 @@ export const Summary = ({ structuredData, rawData }) => {
           </tr>
         </tbody>
       </table>
-      <BetOptionView green={green} moon={moon} red={red} />
       <div className="responsible">
         <table>
           <tbody>
@@ -261,7 +258,9 @@ export const Summary = ({ structuredData, rawData }) => {
                 .map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <th style={{ color: item.betColor }}>{floatToFixed(item.betAmount, 3)}</th>
+                    <th style={{ color: item.betColor }}>
+                      {floatToFixed(item.betAmount, 3)}
+                    </th>
                     <th
                       style={{
                         color: item.color === "moon" ? "yellow" : item.color,
@@ -286,220 +285,9 @@ export const Summary = ({ structuredData, rawData }) => {
         </div>
       </FoldableView>
       <MaxStickView data={limited} />
-      <DetailView data={countConsecutive} adata={limited} />
-      <ManualBet
-        data={rawData.filter((item) =>
-          item.dt
-            ? (range.start
-                ? item.dt >= new Date(range.start).getTime()
-                : true) &&
-              (range.end ? item.dt < new Date(range.end).getTime() : true)
-            : range.start || range.end
-            ? false
-            : true
-        )}
-      />
     </div>
   );
 };
-
-function BetOptionView({ green, moon, red }) {
-  return (
-    <FoldableView title={"bet options"}>
-      <table>
-        <tbody>
-          <tr>
-            <td>green</td>
-            <th>{green + moon}</th>
-            <td>earn</td>
-            <th>{(green + moon) * 2}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{green + moon - red}</th>
-          </tr>
-          <tr>
-            <td>red</td>
-            <th>{red}</th>
-            <td>earn</td>
-            <th>{floatToFixed(red * 1.96)}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{floatToFixed(red * 0.96 - green - moon)}</th>
-          </tr>
-          <tr>
-            <td>moon</td>
-            <th>{moon}</th>
-            <td>earn</td>
-            <th>{moon * 10}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{moon * 9 - green - red}</th>
-          </tr>
-          <tr>
-            <td>green+red</td>
-            <th>{green + moon + red}</th>
-            <td>earn</td>
-            <th>{floatToFixed((green + moon) * 2 + red * 1.96)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{-floatToFixed(red * 0.04)}</th>
-          </tr>
-          <tr>
-            <td>green+moon</td>
-            <th>{green + moon + moon}</th>
-            <td>earn</td>
-            <th>{green * 2 + moon * 12}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{moon * 10 - red * 2}</th>
-          </tr>
-          <tr>
-            <td>red+moon</td>
-            <th>{red + moon}</th>
-            <td>earn</td>
-            <th>{floatToFixed(red * 1.96 + moon * 10)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{floatToFixed(moon * 8 - red * 0.04 - green * 2)}</th>
-          </tr>
-          <tr>
-            <td>green+red+moon</td>
-            <th>{green + moon + red}</th>
-            <td>earn</td>
-            <th>{floatToFixed(green * 2 + moon * 10 + red * 1.96)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 3}</th>
-            <td>profit</td>
-            <th>{floatToFixed(moon * 7 - green - red * 1.04)}</th>
-          </tr>
-        </tbody>
-      </table>
-    </FoldableView>
-  );
-}
-
-function DetailView({ data, adata }) {
-  if (!data || !data.gres || !data.rres) return <></>;
-
-  return (
-    <>
-      <GreenDetailViewTable data={data} />
-      <RedDetailViewTable data={data} />
-      <FoldableView title={"Red Details"}>
-        <SDetails data={adata} />
-      </FoldableView>
-    </>
-  );
-}
-
-function GreenDetailViewTable({ data }) {
-  return (
-    <FoldableView title={"Green"}>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.gres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"green"}
-                    data={item}
-                    nextData={data.gres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      </div>
-    </FoldableView>
-  );
-}
-
-function RedDetailViewTable({ data }) {
-  return (
-    <FoldableView title={"Red"}>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.rres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"red"}
-                    data={data.rres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    nextData={item}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      </div>
-    </FoldableView>
-  );
-}
-
-function DetailViewItem({ color, count, data, nextData }) {
-  if (data === 0 && nextData === 0) return <></>;
-  const bet = data + nextData;
-  const rprofit = floatToFixed(data * 0.96 - nextData);
-  const gprofit = nextData - data;
-  return (
-    <tr>
-      <th style={{ color }}>{count}</th>
-      <td>{bet}</td>
-      <td>{data}</td>
-      <td
-        style={{
-          backgroundColor: rprofit > 0.0 ? "#800" : "transparent",
-        }}
-      >
-        {rprofit}
-      </td>
-      <td>{nextData}</td>
-      <td
-        style={{
-          backgroundColor: gprofit > 0.0 ? "#080" : "transparent",
-        }}
-      >
-        {gprofit}
-      </td>
-    </tr>
-  );
-}
 
 function MaxStickView({ data }) {
   const [select, setSelect] = useState(["green", "red"]);

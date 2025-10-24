@@ -1,0 +1,61 @@
+table,
+th,
+td {
+  border: 1px solid #dddddd4d;
+}
+
+td {
+  text-align: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 4px;
+}
+
+tr:nth-child(odd) {
+  background-color: #2f2f2f2f;
+}
+
+.td-btn {
+  cursor: pointer;
+  transition: ease all 0.3s;
+  background-color: #332f3f;
+}
+.td-btn:hover {
+  background-color: #646cff;
+  opacity: 0.7;
+}
+
+button {
+  min-width: 40px;
+  color: white;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  font-size: 1em;
+  font-family: inherit;
+  background-color: #332f3f;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button.active {
+  border: 1px solid white;
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  background-color: #007bff;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+button:disabled {
+  background-color: gray;
+}
