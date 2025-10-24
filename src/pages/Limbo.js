@@ -60,12 +60,10 @@ const Limbo = () => {
     const rows = [];
     let currentRow = [];
     let lastColor = null;
-    let lastRoundId = 0;
 
     for (let i = 0; i < data.length; i++) {
       const item = data[i];
       const color = item.color === "moon" ? "green" : item.color;
-      const roundId = item.roundId;
 
       if (lastColor !== null && color === lastColor) {
         currentRow.push(item);
@@ -74,7 +72,6 @@ const Limbo = () => {
         currentRow = [item];
         lastColor = color;
       }
-      lastRoundId = roundId;
     }
     if (currentRow.length) rows.push(currentRow);
     setStructuredData(rows);
