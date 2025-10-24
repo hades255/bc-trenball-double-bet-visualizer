@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Summary } from "./limbo/Summary";
+import { Summary } from "../components/limbo/Summary";
 
 const Limbo = () => {
   const [data, setData] = useState([]);

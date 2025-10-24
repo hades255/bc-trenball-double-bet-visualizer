@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Summary } from "./trenball/Summary";
+import { Summary } from "../components/trenball/Summary";
 
 const Trenball = () => {
   const [data, setData] = useState([]);
