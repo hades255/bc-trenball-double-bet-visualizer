@@ -247,8 +247,8 @@ export const Summary = ({ structuredData, rawData }) => {
             <thead>
               <tr>
                 <td></td>
-                <td>mult</td>
                 <td>bet</td>
+                <td>mult</td>
                 <td>profit</td>
                 <td>stick</td>
                 <td></td>
@@ -261,6 +261,7 @@ export const Summary = ({ structuredData, rawData }) => {
                 .map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
+                    <th style={{ color: item.betColor }}>{floatToFixed(item.betAmount, 3)}</th>
                     <th
                       style={{
                         color: item.color === "moon" ? "yellow" : item.color,
@@ -268,7 +269,6 @@ export const Summary = ({ structuredData, rawData }) => {
                     >
                       {item.multiplier}
                     </th>
-                    <th style={{ color: item.betColor }}>{item.betAmount}</th>
                     <td
                       style={{
                         color: item.won ? "gold" : "white",
@@ -613,8 +613,8 @@ function BetCase({ data }) {
     let rres = 0;
     let overMax = 0;
     data.rres.forEach((item, index) => {
-      if (index >= 4) rres += item;
       if (index >= 9) overMax += item;
+      else if (index >= 4) rres += item;
     });
     return `${rres} + ${floatToFixed(
       gres,
