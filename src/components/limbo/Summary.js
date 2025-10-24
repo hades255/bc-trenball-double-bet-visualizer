@@ -4,6 +4,7 @@ import { RenderItems } from "./RenderItems";
 import FoldableView from "../FoldableView";
 import DateTimeRangeSelector from "../DateTimeRangeSelector";
 import "./Summary.css";
+import ManualBet from "./ManualBet";
 
 export const Summary = ({ structuredData, rawData }) => {
   const [range, setRange] = useState({ start: "", end: "" });
@@ -61,7 +62,7 @@ export const Summary = ({ structuredData, rawData }) => {
       if (item.color === "red") red++;
       else if (item.color === "moon") moon++;
       else if (item.color === "green") green++;
-      if (item.betColor) {
+      if (item.betAmount) {
         totalBet++;
         if (item.won) {
           totalWin++;
@@ -234,7 +235,7 @@ export const Summary = ({ structuredData, rawData }) => {
             <td>min</td>
             <th>{floatToFixed(Math.min(...profitState), 3)}</th>
             <th>{floatToFixed(Math.max(...profitState), 3)}</th>
-            <td>RED + GREEN * 4 - MAX * 31</td>
+            <td>RED - 8192 * MAX</td>
           </tr>
         </tbody>
       </table>
@@ -258,7 +259,7 @@ export const Summary = ({ structuredData, rawData }) => {
                 .map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <th style={{ color: item.betColor }}>
+                    <th style={{ color: "green" }}>
                       {floatToFixed(item.betAmount, 3)}
                     </th>
                     <th
@@ -285,6 +286,18 @@ export const Summary = ({ structuredData, rawData }) => {
         </div>
       </FoldableView>
       <MaxStickView data={limited} />
+      <ManualBet
+        data={rawData.filter((item) =>
+          item.dt
+            ? (range.start
+                ? item.dt >= new Date(range.start).getTime()
+                : true) &&
+              (range.end ? item.dt < new Date(range.end).getTime() : true)
+            : range.start || range.end
+            ? false
+            : true
+        )}
+      />
     </div>
   );
 };
@@ -390,27 +403,15 @@ function MaxStickViewItem({ index, data }) {
   );
 }
 
-const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36, -0.28, -1.56, -4.12];
-
 function BetCase({ data }) {
   const result = useMemo(() => {
-    let gres = 0;
-    data.gres.forEach((item, index) => {
-      if (index >= 7 && gMulti[index - 7]) gres += gMulti[index - 7] * item;
-    });
     let rres = 0;
     let overMax = 0;
     data.rres.forEach((item, index) => {
-      if (index >= 9) overMax += item;
-      else if (index >= 4) rres += item;
+      if (index >= 16) overMax += item;
+      else if (index >= 2) rres += item;
     });
-    return `${rres} + ${floatToFixed(
-      gres,
-      2
-    )} * 4 - ${overMax} * 31 = ${floatToFixed(
-      rres + gres * 4 - overMax * 31,
-      2
-    )}`;
+    return `${rres} - 8192 * ${overMax} = ${rres - 8192 * overMax}`;
   }, [data]);
 
   return <>{result}</>;
