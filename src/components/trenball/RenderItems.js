@@ -1,5 +1,5 @@
 import React from "react";
-import { colorMap } from "../constants";
+import { colorMap } from "../../constants";
 import FoldableView from "./FoldableView";
 import { floatToFixed } from "./Summary";
 
