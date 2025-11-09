@@ -6,7 +6,7 @@ import DateTimeRangeSelector from "../DateTimeRangeSelector";
 import "./Summary.css";
 import ManualBet from "./ManualBet";
 
-export const Summary = ({ structuredData, rawData }) => {
+export const Summary = ({ structuredData, rawData, multi }) => {
   const [range, setRange] = useState({ start: "", end: "" });
   const [current, setCurrent] = useState(0);
   const [limit, setLimit] = useState(3000);
@@ -55,7 +55,9 @@ export const Summary = ({ structuredData, rawData }) => {
     totalWin = 0,
     earn = 0,
     winHistory = [],
-    profitState = [];
+    profitState = [],
+    totalBetAmount = 0,
+    totalBetEarn = 0;
 
   limited.forEach((col) => {
     col.forEach((item) => {
@@ -64,8 +66,10 @@ export const Summary = ({ structuredData, rawData }) => {
       else if (item.color === "green") green++;
       if (item.betAmount) {
         totalBet++;
+        totalBetAmount += item.betAmount;
         if (item.won) {
           totalWin++;
+          totalBetEarn += item.betAmount;
         }
         winHistory.push(item);
         earn += item.profit;
@@ -84,12 +88,12 @@ export const Summary = ({ structuredData, rawData }) => {
   profitState = winHistory.map((item) => item.state);
 
   const calculateCountConsecutive = () => {
-    let gres = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    let rres = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let gres = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let rres = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     limited.forEach((item) => {
       if (item && item.length > 0) {
         const color = item[0].color;
-        const count = Math.min(item.length - 1, 17);
+        const count = Math.min(item.length - 1, 20);
         if (color === "red") rres[count]++;
         else gres[count]++;
       }
@@ -138,7 +142,7 @@ export const Summary = ({ structuredData, rawData }) => {
       </h3>
       <DateTimeRangeSelector onChange={handleDateTimeChange} />
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {[10, 20, 50, 100, 1000, 1500, 3000].map((n) => (
+        {[10, 20, 50, 100, 500, 1000, 2000, 3000].map((n) => (
           <button
             key={n}
             onClick={() => handleLimit(n)}
@@ -173,7 +177,7 @@ export const Summary = ({ structuredData, rawData }) => {
           <tbody>
             <tr>
               <td></td>
-              {[...Array(18)].map((_, index) => (
+              {[...Array(21)].map((_, index) => (
                 <th key={index}>{index + 1}</th>
               ))}
               <td></td>
@@ -235,7 +239,15 @@ export const Summary = ({ structuredData, rawData }) => {
             <td>min</td>
             <th>{floatToFixed(Math.min(...profitState), 3)}</th>
             <th>{floatToFixed(Math.max(...profitState), 3)}</th>
-            <td>RED - 8192 * MAX</td>
+            <td>RED - 16384 * MAX</td>
+          </tr>
+          <tr>
+            <td>toal bet amount</td>
+            <th>{floatToFixed(totalBetAmount, 3)}</th>
+            <td>total win amount</td>
+            <th>{floatToFixed(totalBetEarn, 3)}</th>
+            <th></th>
+            <td></td>
           </tr>
         </tbody>
       </table>
@@ -288,7 +300,7 @@ export const Summary = ({ structuredData, rawData }) => {
       <MaxStickView data={limited} />
       <ManualBet
         data={rawData.filter((item) =>
-          item.dt
+          !item.stick && item.dt
             ? (range.start
                 ? item.dt >= new Date(range.start).getTime()
                 : true) &&
@@ -328,7 +340,7 @@ function MaxStickView({ data }) {
                 {
                   data.filter(
                     (item) =>
-                      item[0].color !== "red" && item.length >= 8 && item[0].dt
+                      item[0].color !== "red" && item.length >= 12 && item[0].dt
                   ).length
                 }
               </td>
@@ -343,7 +355,7 @@ function MaxStickView({ data }) {
                 {
                   data.filter(
                     (item) =>
-                      item[0].color === "red" && item.length >= 9 && item[0].dt
+                      item[0].color === "red" && item.length >= 12 && item[0].dt
                   ).length
                 }
               </td>
@@ -360,8 +372,8 @@ function MaxStickView({ data }) {
                       item[0].color === "moon" ? "green" : item[0].color
                     ) &&
                     (item[0].color === "red"
-                      ? item.length >= 9
-                      : item.length >= 8) &&
+                      ? item.length >= 12
+                      : item.length >= 12) &&
                     item[0].dt
                 )
                 .map((item, index) => (
@@ -411,7 +423,7 @@ function BetCase({ data }) {
       if (index >= 16) overMax += item;
       else if (index >= 2) rres += item;
     });
-    return `${rres} - 8192 * ${overMax} = ${rres - 8192 * overMax}`;
+    return `${rres} - 16384 * ${overMax} = ${rres - 16384 * overMax}`;
   }, [data]);
 
   return <>{result}</>;

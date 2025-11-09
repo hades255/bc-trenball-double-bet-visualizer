@@ -43,7 +43,9 @@ const ManualBet = ({ data }) => {
             <td>lose</td>
             <td>{data.length - win}</td>
             <td>profit</td>
-            <td>{floatToFixed(win * bet - data.length)}</td>
+            <td style={{ textAlign: "left" }}>
+              {floatToFixed(win * bet - data.length)}
+            </td>
           </tr>
         </tbody>
       </table>

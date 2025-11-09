@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Summary } from "../components/limbo/Summary";
 
 const Limbo = () => {
   const [data, setData] = useState([]);
   const [status, setStatus] = useState("No files loaded.");
   const [structuredData, setStructuredData] = useState([]);
+  const [multi, setMulti] = useState(2);
 
   const handleInput = async (e) => {
     const files = Array.from(e.target.files);
@@ -40,6 +41,7 @@ const Limbo = () => {
         }
         return item;
       });
+
     setData(sorted);
     setStatus(`${sorted.length} rounds loaded.`);
   };
@@ -57,12 +59,27 @@ const Limbo = () => {
   };
 
   useEffect(() => {
+    let lastColor = "green";
+    let lastStick = 0;
+    let items = [];
+    data.forEach((item) => {
+      if (item.multiplier && !isNaN(item.multiplier)) {
+        const color = item.multiplier >= multi ? "green" : "red";
+        if (lastColor === color) {
+          lastStick++;
+        } else {
+          lastStick = 1;
+        }
+        lastColor = color;
+        items.push({ ...item, color, stick: lastStick });
+      }
+    });
+
     const rows = [];
     let currentRow = [];
-    let lastColor = null;
 
-    for (let i = 0; i < data.length; i++) {
-      const item = data[i];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
       const color = item.color === "moon" ? "green" : item.color;
 
       if (lastColor !== null && color === lastColor) {
@@ -75,7 +92,11 @@ const Limbo = () => {
     }
     if (currentRow.length) rows.push(currentRow);
     setStructuredData(rows);
-  }, [data]);
+  }, [data, multi]);
+
+  const handleMultiChange = useCallback(({ target: { value } }) => {
+    setMulti(value);
+  }, []);
 
   return (
     <>
@@ -97,8 +118,19 @@ const Limbo = () => {
           Export Final JSON
         </button>
       </div>
+      <div>
+        <input
+          name="multi"
+          value={multi}
+          onChange={handleMultiChange}
+          type="number"
+          min={1}
+          max={100}
+          step={0.01}
+        />
+      </div>
       {structuredData && (
-        <Summary structuredData={structuredData} rawData={data} />
+        <Summary structuredData={structuredData} rawData={data} multi={multi} />
       )}
     </>
   );

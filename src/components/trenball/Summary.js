@@ -237,7 +237,7 @@ export const Summary = ({ structuredData, rawData }) => {
             <td>min</td>
             <th>{floatToFixed(Math.min(...profitState), 3)}</th>
             <th>{floatToFixed(Math.max(...profitState), 3)}</th>
-            <td>RED + GREEN * 4 - MAX * 31</td>
+            <td>(Below 12 green) - (12+ green)</td>
           </tr>
         </tbody>
       </table>
@@ -261,7 +261,9 @@ export const Summary = ({ structuredData, rawData }) => {
                 .map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
-                    <th style={{ color: item.betColor }}>{floatToFixed(item.betAmount, 3)}</th>
+                    <th style={{ color: item.betColor }}>
+                      {floatToFixed(item.betAmount, 3)}
+                    </th>
                     <th
                       style={{
                         color: item.color === "moon" ? "yellow" : item.color,
@@ -602,27 +604,27 @@ function MaxStickViewItem({ index, data }) {
   );
 }
 
-const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36, -0.28, -1.56, -4.12];
+const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36];
 
 function BetCase({ data }) {
   const result = useMemo(() => {
     let gres = 0;
+    let glose = 0;
     data.gres.forEach((item, index) => {
-      if (index >= 7 && gMulti[index - 7]) gres += gMulti[index - 7] * item;
+      if (index >= 7 && index < 12 && gMulti[index - 7]) {
+        gres += gMulti[index - 7] * item;
+      } else if (index >= 12 && item) {
+        glose += 31;
+      }
     });
+    // return `${gres} - ${glose}`;
     let rres = 0;
     let overMax = 0;
     data.rres.forEach((item, index) => {
       if (index >= 9) overMax += item;
       else if (index >= 4) rres += item;
     });
-    return `${rres} + ${floatToFixed(
-      gres,
-      2
-    )} * 4 - ${overMax} * 31 = ${floatToFixed(
-      rres + gres * 4 - overMax * 31,
-      2
-    )}`;
+    return `${rres} - ${overMax * 31}, ${gres} - ${glose}`;
   }, [data]);
 
   return <>{result}</>;

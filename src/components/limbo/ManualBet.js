@@ -47,6 +47,21 @@ const ManualBet = ({ data }) => {
           </tr>
         </tbody>
       </table>
+      {/* <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+        <table>
+          <tbody>
+            {data
+              .filter((item) => item.multiplier < bet && item.stick)
+              .map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{new Date(item.dt).toLocaleString()}</td>
+                  <td>{item.stick || ""}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div> */}
     </FoldableView>
   );
 };

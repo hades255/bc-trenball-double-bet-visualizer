@@ -39,6 +39,20 @@ export default function DateTimeRangeSelector({ onChange }) {
     return { start, end };
   };
 
+  const getYearRange = (date) => {
+    const start = new Date(date.getFullYear(), 0, 1, 0, 0, 0, 0);
+    const end = new Date(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      0,
+      23,
+      59,
+      0,
+      0
+    );
+    return { start, end };
+  };
+
   const getDayRange = (date) => {
     const start = new Date(date);
     start.setHours(0, 0, 0, 0);
@@ -68,6 +82,9 @@ export default function DateTimeRangeSelector({ onChange }) {
     } else if (newMode === "month") {
       const { start, end } = getMonthRange(now);
       updateRange(start, end);
+    } else if (newMode === "year") {
+      const { start, end } = getYearRange(now);
+      updateRange(start, end);
     }
   };
 
@@ -85,6 +102,9 @@ export default function DateTimeRangeSelector({ onChange }) {
     } else if (mode === "month") {
       start.setMonth(start.getMonth() + sign * 1);
       end.setMonth(end.getMonth() + sign * 1);
+    } else if (mode === "year") {
+      start.setFullYear(start.getFullYear() + sign * 1);
+      end.setFullYear(end.getFullYear() + sign * 1);
     }
 
     updateRange(start, end);
@@ -125,6 +145,13 @@ export default function DateTimeRangeSelector({ onChange }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <button
+          onClick={() => handleModeChange("year")}
+          className={clsx({ active: mode === "year" })}
+        >
+          Year
+        </button>
+
         <button
           onClick={() => handleModeChange("month")}
           className={clsx({ active: mode === "month" })}

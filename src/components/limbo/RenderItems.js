@@ -57,25 +57,24 @@ export const RenderItems = ({ structuredData }) => {
 };
 
 const RenderItem = ({ item }) => {
-  const title = item.betColor
-    ? `\nBet Color: ${item.betColor}\nBet Amount: ${floatToFixed(
-        item.betAmount,
-        3
-      )}\n${item.won ? "Won" : "Lose"} Profit: ${floatToFixed(item.profit, 3)}`
+  const title = item.betAmount
+    ? `\nBet Color: GREEN\nBet Amount: ${floatToFixed(item.betAmount, 3)}\n${
+        item.won ? "Won" : "Lose"
+      } Profit: ${floatToFixed(item.profit, 3)}`
     : ``;
   const dt = item.dt ? `\n${new Date(Number(item.dt)).toLocaleString()}` : ``;
 
   return (
     <div
-      title={`Round ${item.roundId}\nColor: ${item.color}\nMultiplier: ${item.multiplier}${title}${dt}`}
+      title={`Round ${item.roundId}\nMultiplier: ${item.multiplier}${title}${dt}`}
       style={{
         width: 16,
         height: 16,
         borderRadius: "50%",
         border: `3px solid ${
-          item.betColor ? (item.won ? "gold" : "blue") : "#0b1020a9"
+          item.betAmount ? (item.won ? "gold" : "blue") : "#0b1020a9"
         }`,
-        outline: `1px solid ${item.betColor ? "white" : "black"}`,
+        outline: `1px solid ${item.betAmount ? "white" : "black"}`,
         backgroundColor:
           colorMap[item.color === "moon" ? "moon" : item.color] || "lightblue",
       }}
