@@ -190,6 +190,8 @@ export const Summary = ({ structuredData, rawData }) => {
                     .reduce((a, b) => a + b, 0)}
                 >
                   {item === 0 ? "" : item}
+                  <br />
+                  {item === 0 ? "" : floatToFixed(item * 0.96, 2)}
                 </th>
               ))}
               <td>
@@ -288,7 +290,7 @@ export const Summary = ({ structuredData, rawData }) => {
         </div>
       </FoldableView>
       <MaxStickView data={limited} />
-      <DetailView data={countConsecutive} adata={limited} />
+      {/* <DetailView data={countConsecutive} adata={limited} /> */}
       <ManualBet
         data={rawData.filter((item) =>
           item.dt
@@ -624,7 +626,7 @@ function BetCase({ data }) {
       if (index >= 9) overMax += item;
       else if (index >= 4) rres += item;
     });
-    return `${rres} - ${overMax * 31}, ${gres} - ${glose}`;
+    return `${rres} - ${overMax * 31}, ${floatToFixed(gres, 2)} - ${glose}`;
   }, [data]);
 
   return <>{result}</>;

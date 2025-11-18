@@ -3,20 +3,21 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Container from "./components/Container";
 import Trenball from "./pages/Trenball";
 import Limbo from "./pages/Limbo";
-import Home from "./pages/Home";
-import Navbar from "./components/Navbar";
+// import Home from "./pages/Home";
+// import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
     <Container>
-      <Navbar />
-      <Router>
+      {/* <Navbar /> */}
+      {/* <Router>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Trenball />} />
           <Route path="/trenball" element={<Trenball />} />
           <Route path="/limbo" element={<Limbo />} />
         </Routes>
-      </Router>
+      </Router> */}
+      <Trenball />
     </Container>
   );
 };

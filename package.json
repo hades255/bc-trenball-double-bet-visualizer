@@ -2,22 +2,38 @@
   "name": "bc-json-reader",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^13.5.0",
-    "clsx": "^2.1.1",
-    "jszip": "^3.10.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.4",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+  "main": "public/electron.js",
+  "homepage": "./",
+  "build": {
+    "appId": "com.bcjsonreader.app",
+    "productName": "BC JSON Reader",
+    "directories": {
+      "buildResources": "build"
+    },
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "extraMetadata": {
+      "main": "build/electron.js"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "public/logo.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run copy-electron",
+    "copy-electron": "node -e \"require('fs').copyFileSync('public/electron.js', 'build/electron.js'); require('fs').copyFileSync('public/preload.js', 'build/preload.js');\"",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"cross-env BROWSER=none react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
+    "pack": "electron-builder --dir",
+    "dist": "npm run build && electron-builder",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -38,5 +54,26 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "clsx": "^2.1.1",
+    "jszip": "^3.10.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.4",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^39.2.1",
+    "electron-builder": "^26.0.12",
+    "electron-is-dev": "^2.0.0",
+    "wait-on": "^7.2.0"
   }
 }
