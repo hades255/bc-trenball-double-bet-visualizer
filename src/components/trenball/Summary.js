@@ -224,23 +224,17 @@ export const Summary = ({ structuredData, rawData }) => {
       <table>
         <tbody>
           <tr>
-            <td>total bet</td>
             <th>{totalBet}</th>
-            <td>win</td>
+            <td>bet/win</td>
             <th>{totalWin}</th>
-            <td>max</td>
-            <td style={{ padding: 0 }}>
-              <BetCase data={countConsecutive} />
-            </td>
-          </tr>
-          <tr>
             <td>earn</td>
             <th>{floatToFixed(earn, 3)}</th>
             <td>min</td>
             <th>{floatToFixed(Math.min(...profitState), 3)}</th>
+            <td>max</td>
             <th>{floatToFixed(Math.max(...profitState), 3)}</th>
-            <td>(Below 12 green) - (12+ green)</td>
           </tr>
+          <BetCase data={countConsecutive} />
         </tbody>
       </table>
       <FoldableView title={"win history"}>
@@ -606,17 +600,30 @@ function MaxStickViewItem({ index, data }) {
   );
 }
 
-const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36];
+const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36, -0.28];
 
 function BetCase({ data }) {
   const result = useMemo(() => {
     let gres = 0;
     let glose = 0;
+    let ghis = [];
+    let gres7 = 0;
+    let glose7 = 0;
+    let ghis7 = [];
     data.gres.forEach((item, index) => {
-      if (index >= 7 && index < 12 && gMulti[index - 7]) {
-        gres += gMulti[index - 7] * item;
+      if (index >= 6 && index < 12 && gMulti[index - 6]) {
+        const m = gMulti[index - 6] * item;
+        gres7 += m;
+        ghis7.push(`${gMulti[index - 6]} * ${item} = ${floatToFixed(m)}`);
       } else if (index >= 12 && item) {
-        glose += 31;
+        glose7 += 1;
+      }
+      if (index >= 7 && index < 12 && gMulti[index - 7]) {
+        const m = gMulti[index - 7] * item;
+        gres += m;
+        ghis.push(`${gMulti[index - 7]} * ${item} = ${floatToFixed(m)}`);
+      } else if (index >= 12 && item) {
+        glose += 1;
       }
     });
     // return `${gres} - ${glose}`;
@@ -626,7 +633,58 @@ function BetCase({ data }) {
       if (index >= 9) overMax += item;
       else if (index >= 4) rres += item;
     });
-    return `${rres} - ${overMax * 31}, ${floatToFixed(gres, 2)} - ${glose}`;
+    return (
+      <>
+        <tr>
+          <td>red</td>
+          <td>5{"<"}9</td>
+          <td>{rres}</td>
+          <td>{">"}9</td>
+          <td>{overMax}</td>
+          <td>sum</td>
+          <td>{rres - overMax * 31}</td>
+          <td>(-31)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>green {">"}7</td>
+          <td>7{"<"}12</td>
+          <td>{floatToFixed(gres7)}</td>
+          <td>{">"}12</td>
+          <td>{glose7}</td>
+          <td>sum</td>
+          <td>{floatToFixed(gres7 - glose7 * 63)}</td>
+          <td>(-63)</td>
+          <td style={{ textAlign: "left" }}>
+            {ghis7.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </td>
+        </tr>
+        <tr>
+          <td>green {">"}8</td>
+          <td>8{"<"}12</td>
+          <td>
+            {floatToFixed(gres)}
+            <p>({floatToFixed(gres * 2)})</p>
+          </td>
+          <td>{">"}12</td>
+          <td>{glose}</td>
+          <td>sum</td>
+          <td>
+            {floatToFixed(gres - glose * 31)}
+            <p>({floatToFixed((gres - glose * 31) * 2)})</p>
+          </td>
+          <td>(-31)</td>
+          <td style={{ textAlign: "left" }}>
+            {ghis.map((item, index) => (
+              <div key={index}>{item}</div>
+            ))}
+          </td>
+        </tr>
+      </>
+    );
+    // `${rres} - ${overMax * 31}, ${floatToFixed(gres, 2)} - ${glose}`;
   }, [data]);
 
   return <>{result}</>;

@@ -1,8 +1,8 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import React from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Container from "./components/Container";
 import Trenball from "./pages/Trenball";
-import Limbo from "./pages/Limbo";
+// import Limbo from "./pages/Limbo";
 // import Home from "./pages/Home";
 // import Navbar from "./components/Navbar";
 
