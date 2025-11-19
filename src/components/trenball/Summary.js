@@ -1,33 +1,17 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
-import { RenderItems } from "./RenderItems";
-import FoldableView from "../FoldableView";
 import DateTimeRangeSelector from "../DateTimeRangeSelector";
-import "./Summary.css";
-import SDetails from "./SDetails";
+import FoldableView from "../FoldableView";
 import ManualBet from "./ManualBet";
+import SDetails from "./SDetails";
+import { RenderItems } from "./RenderItems";
+import "./Summary.css";
 
 export const Summary = ({ structuredData, rawData }) => {
   const [range, setRange] = useState({ start: "", end: "" });
   const [current, setCurrent] = useState(0);
   const [limit, setLimit] = useState(3000);
-
-  const filtered = useMemo(
-    () =>
-      structuredData && structuredData.length
-        ? structuredData.filter((item) =>
-            item[0].dt
-              ? (range.start
-                  ? item[0].dt >= new Date(range.start).getTime()
-                  : true) &&
-                (range.end ? item[0].dt < new Date(range.end).getTime() : true)
-              : range.start || range.end
-              ? false
-              : true
-          )
-        : [],
-    [structuredData, range]
-  );
+  const [filtered, setFiltered] = useState([]);
 
   const limited = useMemo(
     () =>
@@ -40,9 +24,25 @@ export const Summary = ({ structuredData, rawData }) => {
     [filtered, limit, current]
   );
 
+  useEffect(() => {
+    if (structuredData && structuredData.length) {
+      const _filtered = structuredData.filter((item) =>
+        item[0].dt
+          ? (range.start
+              ? item[0].dt >= new Date(range.start).getTime()
+              : true) &&
+            (range.end ? item[0].dt < new Date(range.end).getTime() : true)
+          : range.start || range.end
+          ? false
+          : true
+      );
+      setFiltered(_filtered);
+      setLimit(_filtered.length);
+    }
+  }, [structuredData, range]);
+
   const handleDateTimeChange = (newRange) => {
     setCurrent(0);
-    setLimit(3000);
     setRange(newRange);
   };
 
@@ -120,6 +120,21 @@ export const Summary = ({ structuredData, rawData }) => {
     setCurrent(current > 0 ? current - 1 : 0);
   };
 
+  const exportJSON = () => {
+    const data = filtered;
+    const start = range.start.substring(0, range.start.length - 3);
+    const end = range.end.substring(0, range.end.length - 3);
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${start}_${end}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div
       style={{
@@ -132,10 +147,13 @@ export const Summary = ({ structuredData, rawData }) => {
         gap: 12,
       }}
     >
-      <h3>
+      <h3 className="flex">
         Summary {Math.max(filtered.length - limit * current - limit, 0)}
         {" to "}
         {filtered.length - current * limit} ({limited.length})
+        <div style={{ marginLeft: 8 }}>
+          <button onClick={exportJSON}>Export to JSON</button>
+        </div>
       </h3>
       <DateTimeRangeSelector onChange={handleDateTimeChange} />
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
@@ -148,7 +166,12 @@ export const Summary = ({ structuredData, rawData }) => {
             {n}
           </button>
         ))}
-        <button onClick={() => handleLimit("max")}>Max</button>
+        <button
+          onClick={() => handleLimit("max")}
+          className={clsx({ active: limit === filtered.length })}
+        >
+          Max
+        </button>
         <button onClick={handleClickPrev}>Prev</button>
         <button onClick={handleClickNext}>Next</button>
       </div>
@@ -190,8 +213,8 @@ export const Summary = ({ structuredData, rawData }) => {
                     .reduce((a, b) => a + b, 0)}
                 >
                   {item === 0 ? "" : item}
-                  <br />
-                  {item === 0 ? "" : floatToFixed(item * 0.96, 2)}
+                  {/* <br />
+                  {item === 0 ? "" : floatToFixed(item * 0.96, 2)} */}
                 </th>
               ))}
               <td>
@@ -224,15 +247,18 @@ export const Summary = ({ structuredData, rawData }) => {
       <table>
         <tbody>
           <tr>
+            <td>bet</td>
             <th>{totalBet}</th>
-            <td>bet/win</td>
+            <td>win</td>
             <th>{totalWin}</th>
             <td>earn</td>
             <th>{floatToFixed(earn, 3)}</th>
-            <td>min</td>
-            <th>{floatToFixed(Math.min(...profitState), 3)}</th>
-            <td>max</td>
-            <th>{floatToFixed(Math.max(...profitState), 3)}</th>
+            <td>min/max</td>
+            <th>
+              {floatToFixed(Math.min(...profitState), 3)}
+              {" / "}
+              {floatToFixed(Math.max(...profitState), 3)}
+            </th>
           </tr>
           <BetCase data={countConsecutive} />
         </tbody>
@@ -605,9 +631,11 @@ const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36, -0.28];
 function BetCase({ data }) {
   const result = useMemo(() => {
     let gres = 0;
+    let greCounts = 0;
     let glose = 0;
     let ghis = [];
     let gres7 = 0;
+    let gresCount7 = 0;
     let glose7 = 0;
     let ghis7 = [];
     data.gres.forEach((item, index) => {
@@ -615,6 +643,7 @@ function BetCase({ data }) {
         const m = gMulti[index - 6] * item;
         gres7 += m;
         ghis7.push(`${gMulti[index - 6]} * ${item} = ${floatToFixed(m)}`);
+        gresCount7 += item;
       } else if (index >= 12 && item) {
         glose7 += 1;
       }
@@ -622,6 +651,7 @@ function BetCase({ data }) {
         const m = gMulti[index - 7] * item;
         gres += m;
         ghis.push(`${gMulti[index - 7]} * ${item} = ${floatToFixed(m)}`);
+        greCounts += item;
       } else if (index >= 12 && item) {
         glose += 1;
       }
@@ -630,31 +660,42 @@ function BetCase({ data }) {
     let rres = 0;
     let overMax = 0;
     data.rres.forEach((item, index) => {
-      if (index >= 9) overMax += item;
-      else if (index >= 4) rres += item;
+      if (index >= 16) overMax += item;
+      else if (index >= 11) rres += item;
     });
     return (
       <>
         <tr>
-          <td>red</td>
-          <td>5{"<"}9</td>
-          <td>{rres}</td>
-          <td>{">"}9</td>
-          <td>{overMax}</td>
-          <td>sum</td>
-          <td>{rres - overMax * 31}</td>
-          <td>(-31)</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
           <td></td>
         </tr>
         <tr>
-          <td>green {">"}7</td>
-          <td>7{"<"}12</td>
-          <td>{floatToFixed(gres7)}</td>
+          <td style={{ color: "red" }}>red</td>
+          <td>12{"<"}16</td>
+          <td>{rres}</td>
           <td>{">"}12</td>
-          <td>{glose7}</td>
+          <td>{overMax}*(-32)</td>
           <td>sum</td>
-          <td>{floatToFixed(gres7 - glose7 * 63)}</td>
-          <td>(-63)</td>
+          <td>{rres - overMax * 32}</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td style={{ color: "lightgreen" }}>green {">"}7</td>
+          <td>7{"<"}12</td>
+          <td>
+            <p>{gresCount7}</p>
+            <p>{floatToFixed(gres7)}</p>
+          </td>
+          <td>{">"}12</td>
+          <td>{glose7}*(-64)</td>
+          <td>sum</td>
+          <th>{floatToFixed(gres7 - glose7 * 64)}</th>
           <td style={{ textAlign: "left" }}>
             {ghis7.map((item, index) => (
               <div key={index}>{item}</div>
@@ -662,20 +703,22 @@ function BetCase({ data }) {
           </td>
         </tr>
         <tr>
-          <td>green {">"}8</td>
+          <td style={{ color: "lightgreen" }}>green {">"}8</td>
           <td>8{"<"}12</td>
           <td>
-            {floatToFixed(gres)}
+            <p>{greCounts}</p>
+            <p>{floatToFixed(gres)}</p>
             <p>({floatToFixed(gres * 2)})</p>
           </td>
           <td>{">"}12</td>
-          <td>{glose}</td>
+          <td>{glose}*(-32)</td>
           <td>sum</td>
           <td>
-            {floatToFixed(gres - glose * 31)}
-            <p>({floatToFixed((gres - glose * 31) * 2)})</p>
+            <p style={{ fontWeight: "bold" }}>
+              {floatToFixed(gres - glose * 32)}
+            </p>
+            <p>({floatToFixed((gres - glose * 32) * 2)})</p>
           </td>
-          <td>(-31)</td>
           <td style={{ textAlign: "left" }}>
             {ghis.map((item, index) => (
               <div key={index}>{item}</div>

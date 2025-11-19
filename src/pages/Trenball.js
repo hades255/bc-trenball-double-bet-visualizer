@@ -101,7 +101,7 @@ const Trenball = () => {
           disabled={!data.length}
           style={{ marginBottom: 20 }}
         >
-          Export Final JSON
+          Export All
         </button>
       </div>
       {structuredData && (
