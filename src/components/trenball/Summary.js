@@ -120,7 +120,7 @@ export const Summary = ({ structuredData, rawData }) => {
     setCurrent(current > 0 ? current - 1 : 0);
   };
 
-  const exportJSON = () => {
+  const exportStJSON = () => {
     const data = filtered;
     const start = range.start.substring(0, range.start.length - 3);
     const end = range.end.substring(0, range.end.length - 3);
@@ -130,7 +130,26 @@ export const Summary = ({ structuredData, rawData }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${start}_${end}.json`;
+    a.download = `${start}_${end}_st.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportJSON = () => {
+    const data = filtered.flat().sort((a, b) => {
+      if (a > b) return -1;
+      if (a < b) return 1;
+      return 0;
+    });
+    const start = range.start.substring(0, range.start.length - 3);
+    const end = range.end.substring(0, range.end.length - 3);
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${start}_${end}_raw.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -152,7 +171,15 @@ export const Summary = ({ structuredData, rawData }) => {
         {" to "}
         {filtered.length - current * limit} ({limited.length})
         <div style={{ marginLeft: 8 }}>
-          <button onClick={exportJSON}>Export to JSON</button>
+          <button
+            style={{ marginLeft: 4, display: "none" }}
+            onClick={exportStJSON}
+          >
+            structured export
+          </button>
+          <button style={{ marginLeft: 4 }} onClick={exportJSON}>
+            raw export
+          </button>
         </div>
       </h3>
       <DateTimeRangeSelector onChange={handleDateTimeChange} />
@@ -311,18 +338,20 @@ export const Summary = ({ structuredData, rawData }) => {
       </FoldableView>
       <MaxStickView data={limited} />
       {/* <DetailView data={countConsecutive} adata={limited} /> */}
-      <ManualBet
-        data={rawData.filter((item) =>
-          item.dt
-            ? (range.start
-                ? item.dt >= new Date(range.start).getTime()
-                : true) &&
-              (range.end ? item.dt < new Date(range.end).getTime() : true)
-            : range.start || range.end
-            ? false
-            : true
-        )}
-      />
+      {rawData && (
+        <ManualBet
+          data={rawData.filter((item) =>
+            item.dt
+              ? (range.start
+                  ? item.dt >= new Date(range.start).getTime()
+                  : true) &&
+                (range.end ? item.dt < new Date(range.end).getTime() : true)
+              : range.start || range.end
+              ? false
+              : true
+          )}
+        />
+      )}
     </div>
   );
 };
@@ -566,7 +595,7 @@ function MaxStickView({ data }) {
                 {
                   data.filter(
                     (item) =>
-                      item[0].color === "red" && item.length >= 9 && item[0].dt
+                      item[0].color === "red" && item.length >= 12 && item[0].dt
                   ).length
                 }
               </td>
@@ -679,7 +708,7 @@ function BetCase({ data }) {
           <td style={{ color: "red" }}>red</td>
           <td>12{"<"}16</td>
           <td>{rres}</td>
-          <td>{">"}12</td>
+          <td>{">"}16</td>
           <td>{overMax}*(-32)</td>
           <td>sum</td>
           <td>{rres - overMax * 32}</td>

@@ -6,7 +6,7 @@ const Trenball = () => {
   const [status, setStatus] = useState("No files loaded.");
   const [structuredData, setStructuredData] = useState([]);
 
-  const handleInput = async (e) => {
+  const handleInputRaw = async (e) => {
     const files = Array.from(e.target.files);
     if (!files.length) return;
 
@@ -20,6 +20,46 @@ const Trenball = () => {
         json.forEach((item) => {
           if (item && item.roundId && !roundMap.has(item.roundId)) {
             roundMap.set(item.roundId, item);
+          }
+        });
+      } catch (err) {
+        console.warn("Failed to parse", file.name, err);
+      }
+    }
+
+    const sorted = Array.from(roundMap.values())
+      .sort((a, b) => parseInt(a.roundId) - parseInt(b.roundId))
+      .map((item) => {
+        item.dt = item.dt || 1760022000000;
+        if (item.multiplier && isNaN(item.multiplier)) {
+          const match = item.multiplier.match(/-?[\d,]*\.?\d+/);
+          if (match) {
+            const num = parseFloat(match[0]);
+            item.multiplier = num;
+          }
+        }
+        return item;
+      });
+    setData(sorted);
+    setStatus(`${sorted.length} rounds loaded.`);
+  };
+
+  const handleInput = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    setStatus("Reading files...");
+    const roundMap = new Map();
+
+    for (const file of files) {
+      try {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        json.forEach((group) => {
+          for (let item of group) {
+            if (item && item.roundId && !roundMap.has(item.roundId)) {
+              roundMap.set(item.roundId, item);
+            }
           }
         });
       } catch (err) {
@@ -93,8 +133,16 @@ const Trenball = () => {
           type="file"
           accept="application/json"
           multiple
+          onChange={handleInputRaw}
+          style={{ marginBottom: 16 }}
+        />
+        <input
+          type="file"
+          accept="application/json"
+          multiple
           onChange={handleInput}
           style={{ marginBottom: 16 }}
+          hidden
         />
         <button
           onClick={exportJSON}
