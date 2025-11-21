@@ -612,7 +612,7 @@ function MaxStickView({ data }) {
                       item[0].color === "moon" ? "green" : item[0].color
                     ) &&
                     (item[0].color === "red"
-                      ? item.length >= 9
+                      ? item.length >= 12
                       : item.length >= 8) &&
                     item[0].dt
                 )
@@ -674,7 +674,7 @@ function BetCase({ data }) {
         ghis7.push(`${gMulti[index - 6]} * ${item} = ${floatToFixed(m)}`);
         gresCount7 += item;
       } else if (index >= 12 && item) {
-        glose7 += 1;
+        glose7 += item;
       }
       if (index >= 7 && index < 12 && gMulti[index - 7]) {
         const m = gMulti[index - 7] * item;
@@ -682,7 +682,7 @@ function BetCase({ data }) {
         ghis.push(`${gMulti[index - 7]} * ${item} = ${floatToFixed(m)}`);
         greCounts += item;
       } else if (index >= 12 && item) {
-        glose += 1;
+        glose += item;
       }
     });
     // return `${gres} - ${glose}`;
@@ -709,9 +709,9 @@ function BetCase({ data }) {
           <td>12{"<"}16</td>
           <td>{rres}</td>
           <td>{">"}16</td>
-          <td>{overMax}*(-32)</td>
+          <td>{overMax}*(-31)</td>
           <td>sum</td>
-          <td>{rres - overMax * 32}</td>
+          <td>{rres - overMax * 31}</td>
           <td></td>
         </tr>
         <tr>
@@ -722,9 +722,9 @@ function BetCase({ data }) {
             <p>{floatToFixed(gres7)}</p>
           </td>
           <td>{">"}12</td>
-          <td>{glose7}*(-64)</td>
+          <td>{glose7}*(-63)</td>
           <td>sum</td>
-          <th>{floatToFixed(gres7 - glose7 * 64)}</th>
+          <th>{floatToFixed(gres7 - glose7 * 63)}</th>
           <td style={{ textAlign: "left" }}>
             {ghis7.map((item, index) => (
               <div key={index}>{item}</div>
@@ -740,13 +740,13 @@ function BetCase({ data }) {
             <p>({floatToFixed(gres * 2)})</p>
           </td>
           <td>{">"}12</td>
-          <td>{glose}*(-32)</td>
+          <td>{glose}*(-31)</td>
           <td>sum</td>
           <td>
             <p style={{ fontWeight: "bold" }}>
-              {floatToFixed(gres - glose * 32)}
+              {floatToFixed(gres - glose * 31)}
             </p>
-            <p>({floatToFixed((gres - glose * 32) * 2)})</p>
+            <p>({floatToFixed((gres - glose * 31) * 2)})</p>
           </td>
           <td style={{ textAlign: "left" }}>
             {ghis.map((item, index) => (

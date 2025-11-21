@@ -100,7 +100,7 @@ const Limbo = () => {
 
   return (
     <>
-      <h2>Limbo Visualizer</h2>
+      {/* <h2>Limbo Visualizer</h2> */}
       <p>Status: {status}</p>
       <div>
         <input

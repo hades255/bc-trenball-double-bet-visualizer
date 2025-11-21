@@ -1,5 +1,7 @@
 {
   "name": "bc-json-reader",
+  "author": "",
+  "description": "BC json viewer",
   "version": "0.1.0",
   "private": true,
   "main": "public/electron.js",

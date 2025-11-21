@@ -126,7 +126,7 @@ const Trenball = () => {
 
   return (
     <>
-      <h2>Trenball Visualizer</h2>
+      {/* <h2>Trenball Visualizer</h2> */}
       <p>Status: {status}</p>
       <div>
         <input

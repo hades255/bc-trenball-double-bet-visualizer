@@ -1,18 +1,18 @@
 import React from "react";
 import "./Navbar.css";
 
-const Navbar = () => {
+const Navbar = ({ active, onClick }) => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <a href="/">BC</a>
+        <span>{active.toUpperCase()}</span>
       </div>
       <ul className="navbar-links">
         <li>
-          <a href="/trenball">Trenball</a>
+          <button onClick={() => onClick("trenball")}>T</button>
         </li>
         <li>
-          <a href="/limbo">Limbo</a>
+          <button onClick={() => onClick("limbo")}>L</button>
         </li>
       </ul>
     </nav>

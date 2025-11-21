@@ -1,23 +1,18 @@
 // import React from "react";
-// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Container from "./components/Container";
 import Trenball from "./pages/Trenball";
-// import Limbo from "./pages/Limbo";
-// import Home from "./pages/Home";
-// import Navbar from "./components/Navbar";
+import Limbo from "./pages/Limbo";
+import Navbar from "./components/Navbar";
+import { useState } from "react";
 
 const App = () => {
+  const [active, setActive] = useState("trenball");
+
   return (
     <Container>
-      {/* <Navbar /> */}
-      {/* <Router>
-        <Routes>
-          <Route path="/" element={<Trenball />} />
-          <Route path="/trenball" element={<Trenball />} />
-          <Route path="/limbo" element={<Limbo />} />
-        </Routes>
-      </Router> */}
-      <Trenball />
+      <Navbar active={active} onClick={setActive} />
+      {active === "trenball" && <Trenball />}
+      {active === "limbo" && <Limbo />}
     </Container>
   );
 };
