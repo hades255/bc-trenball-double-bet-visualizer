@@ -580,7 +580,7 @@ function MaxStickView({ data }) {
                 {
                   data.filter(
                     (item) =>
-                      item[0].color !== "red" && item.length >= 8 && item[0].dt
+                      item[0].color !== "red" && item.length > 12 && item[0].dt
                   ).length
                 }
               </td>
@@ -613,7 +613,7 @@ function MaxStickView({ data }) {
                     ) &&
                     (item[0].color === "red"
                       ? item.length >= 12
-                      : item.length >= 8) &&
+                      : item.length > 12) &&
                     item[0].dt
                 )
                 .map((item, index) => (
@@ -663,19 +663,19 @@ function BetCase({ data }) {
     let greCounts = 0;
     let glose = 0;
     let ghis = [];
-    let gres7 = 0;
-    let gresCount7 = 0;
-    let glose7 = 0;
-    let ghis7 = [];
+    // let gres7 = 0;
+    // let gresCount7 = 0;
+    // let glose7 = 0;
+    // let ghis7 = [];
     data.gres.forEach((item, index) => {
-      if (index >= 6 && index < 12 && gMulti[index - 6]) {
-        const m = gMulti[index - 6] * item;
-        gres7 += m;
-        ghis7.push(`${gMulti[index - 6]} * ${item} = ${floatToFixed(m)}`);
-        gresCount7 += item;
-      } else if (index >= 12 && item) {
-        glose7 += item;
-      }
+      // if (index >= 6 && index < 12 && gMulti[index - 6]) {
+      //   const m = gMulti[index - 6] * item;
+      //   gres7 += m;
+      //   ghis7.push(`${gMulti[index - 6]} * ${item} = ${floatToFixed(m)}`);
+      //   gresCount7 += item;
+      // } else if (index >= 12 && item) {
+      //   glose7 += item;
+      // }
       if (index >= 7 && index < 12 && gMulti[index - 7]) {
         const m = gMulti[index - 7] * item;
         gres += m;
@@ -714,7 +714,7 @@ function BetCase({ data }) {
           <td>{rres - overMax * 31}</td>
           <td></td>
         </tr>
-        <tr>
+        {/* <tr>
           <td style={{ color: "lightgreen" }}>green {">"}7</td>
           <td>7{"<"}12</td>
           <td>
@@ -730,7 +730,7 @@ function BetCase({ data }) {
               <div key={index}>{item}</div>
             ))}
           </td>
-        </tr>
+        </tr> */}
         <tr>
           <td style={{ color: "lightgreen" }}>green {">"}8</td>
           <td>8{"<"}12</td>
