@@ -3,7 +3,6 @@ import clsx from "clsx";
 import DateTimeRangeSelector from "../DateTimeRangeSelector";
 import FoldableView from "../FoldableView";
 import ManualBet from "./ManualBet";
-import SDetails from "./SDetails";
 import { RenderItems } from "./RenderItems";
 import "./Summary.css";
 
@@ -219,7 +218,7 @@ export const Summary = ({ structuredData, rawData }) => {
           </tr>
         </tbody>
       </table>
-      <BetOptionView green={green} moon={moon} red={red} />
+      {/* <BetOptionView green={green} moon={moon} red={red} /> */}
       <div className="responsible">
         <table>
           <tbody>
@@ -338,7 +337,7 @@ export const Summary = ({ structuredData, rawData }) => {
       </FoldableView>
       <MaxStickView data={limited} />
       {/* <DetailView data={countConsecutive} adata={limited} /> */}
-      {rawData && (
+      {false && rawData && (
         <ManualBet
           data={rawData.filter((item) =>
             item.dt
@@ -352,207 +351,210 @@ export const Summary = ({ structuredData, rawData }) => {
           )}
         />
       )}
+      <FoldableView title={"times"} init>
+        <TimeDetail data={limited} />
+      </FoldableView>
     </div>
   );
 };
 
-function BetOptionView({ green, moon, red }) {
-  return (
-    <FoldableView title={"bet options"}>
-      <table>
-        <tbody>
-          <tr>
-            <td>green</td>
-            <th>{green + moon}</th>
-            <td>earn</td>
-            <th>{(green + moon) * 2}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{green + moon - red}</th>
-          </tr>
-          <tr>
-            <td>red</td>
-            <th>{red}</th>
-            <td>earn</td>
-            <th>{floatToFixed(red * 1.96)}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{floatToFixed(red * 0.96 - green - moon)}</th>
-          </tr>
-          <tr>
-            <td>moon</td>
-            <th>{moon}</th>
-            <td>earn</td>
-            <th>{moon * 10}</th>
-            <td>lose</td>
-            <th>{green + moon + red}</th>
-            <td>profit</td>
-            <th>{moon * 9 - green - red}</th>
-          </tr>
-          <tr>
-            <td>green+red</td>
-            <th>{green + moon + red}</th>
-            <td>earn</td>
-            <th>{floatToFixed((green + moon) * 2 + red * 1.96)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{-floatToFixed(red * 0.04)}</th>
-          </tr>
-          <tr>
-            <td>green+moon</td>
-            <th>{green + moon + moon}</th>
-            <td>earn</td>
-            <th>{green * 2 + moon * 12}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{moon * 10 - red * 2}</th>
-          </tr>
-          <tr>
-            <td>red+moon</td>
-            <th>{red + moon}</th>
-            <td>earn</td>
-            <th>{floatToFixed(red * 1.96 + moon * 10)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 2}</th>
-            <td>profit</td>
-            <th>{floatToFixed(moon * 8 - red * 0.04 - green * 2)}</th>
-          </tr>
-          <tr>
-            <td>green+red+moon</td>
-            <th>{green + moon + red}</th>
-            <td>earn</td>
-            <th>{floatToFixed(green * 2 + moon * 10 + red * 1.96)}</th>
-            <td>lose</td>
-            <th>{(green + moon + red) * 3}</th>
-            <td>profit</td>
-            <th>{floatToFixed(moon * 7 - green - red * 1.04)}</th>
-          </tr>
-        </tbody>
-      </table>
-    </FoldableView>
-  );
-}
+// function BetOptionView({ green, moon, red }) {
+//   return (
+//     <FoldableView title={"bet options"}>
+//       <table>
+//         <tbody>
+//           <tr>
+//             <td>green</td>
+//             <th>{green + moon}</th>
+//             <td>earn</td>
+//             <th>{(green + moon) * 2}</th>
+//             <td>lose</td>
+//             <th>{green + moon + red}</th>
+//             <td>profit</td>
+//             <th>{green + moon - red}</th>
+//           </tr>
+//           <tr>
+//             <td>red</td>
+//             <th>{red}</th>
+//             <td>earn</td>
+//             <th>{floatToFixed(red * 1.96)}</th>
+//             <td>lose</td>
+//             <th>{green + moon + red}</th>
+//             <td>profit</td>
+//             <th>{floatToFixed(red * 0.96 - green - moon)}</th>
+//           </tr>
+//           <tr>
+//             <td>moon</td>
+//             <th>{moon}</th>
+//             <td>earn</td>
+//             <th>{moon * 10}</th>
+//             <td>lose</td>
+//             <th>{green + moon + red}</th>
+//             <td>profit</td>
+//             <th>{moon * 9 - green - red}</th>
+//           </tr>
+//           <tr>
+//             <td>green+red</td>
+//             <th>{green + moon + red}</th>
+//             <td>earn</td>
+//             <th>{floatToFixed((green + moon) * 2 + red * 1.96)}</th>
+//             <td>lose</td>
+//             <th>{(green + moon + red) * 2}</th>
+//             <td>profit</td>
+//             <th>{-floatToFixed(red * 0.04)}</th>
+//           </tr>
+//           <tr>
+//             <td>green+moon</td>
+//             <th>{green + moon + moon}</th>
+//             <td>earn</td>
+//             <th>{green * 2 + moon * 12}</th>
+//             <td>lose</td>
+//             <th>{(green + moon + red) * 2}</th>
+//             <td>profit</td>
+//             <th>{moon * 10 - red * 2}</th>
+//           </tr>
+//           <tr>
+//             <td>red+moon</td>
+//             <th>{red + moon}</th>
+//             <td>earn</td>
+//             <th>{floatToFixed(red * 1.96 + moon * 10)}</th>
+//             <td>lose</td>
+//             <th>{(green + moon + red) * 2}</th>
+//             <td>profit</td>
+//             <th>{floatToFixed(moon * 8 - red * 0.04 - green * 2)}</th>
+//           </tr>
+//           <tr>
+//             <td>green+red+moon</td>
+//             <th>{green + moon + red}</th>
+//             <td>earn</td>
+//             <th>{floatToFixed(green * 2 + moon * 10 + red * 1.96)}</th>
+//             <td>lose</td>
+//             <th>{(green + moon + red) * 3}</th>
+//             <td>profit</td>
+//             <th>{floatToFixed(moon * 7 - green - red * 1.04)}</th>
+//           </tr>
+//         </tbody>
+//       </table>
+//     </FoldableView>
+//   );
+// }
 
-function DetailView({ data, adata }) {
-  if (!data || !data.gres || !data.rres) return <></>;
+// function DetailView({ data, adata }) {
+//   if (!data || !data.gres || !data.rres) return <></>;
 
-  return (
-    <>
-      <GreenDetailViewTable data={data} />
-      <RedDetailViewTable data={data} />
-      <FoldableView title={"Red Details"}>
-        <SDetails data={adata} />
-      </FoldableView>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <GreenDetailViewTable data={data} />
+//       <RedDetailViewTable data={data} />
+//       <FoldableView title={"Red Details"}>
+//         <SDetails data={adata} />
+//       </FoldableView>
+//     </>
+//   );
+// }
 
-function GreenDetailViewTable({ data }) {
-  return (
-    <FoldableView title={"Green"}>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.gres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"green"}
-                    data={item}
-                    nextData={data.gres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      </div>
-    </FoldableView>
-  );
-}
+// function GreenDetailViewTable({ data }) {
+//   return (
+//     <FoldableView title={"Green"}>
+//       <div>
+//         <table>
+//           <thead>
+//             <tr>
+//               <th>count</th>
+//               <th>bet</th>
+//               <th>red win</th>
+//               <th>profit</th>
+//               <th>green win</th>
+//               <th>profit</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {data.gres.map(
+//               (item, index) =>
+//                 index < 17 && (
+//                   <DetailViewItem
+//                     color={"green"}
+//                     data={item}
+//                     nextData={data.gres
+//                       .filter((_, _index) => _index >= index + 1)
+//                       .reduce((a, b) => a + b, 0)}
+//                     count={index + 1}
+//                     key={index}
+//                   />
+//                 )
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </FoldableView>
+//   );
+// }
 
-function RedDetailViewTable({ data }) {
-  return (
-    <FoldableView title={"Red"}>
-      <div>
-        <table>
-          <thead>
-            <tr>
-              <th>count</th>
-              <th>bet</th>
-              <th>red win</th>
-              <th>profit</th>
-              <th>green win</th>
-              <th>profit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.rres.map(
-              (item, index) =>
-                index < 17 && (
-                  <DetailViewItem
-                    color={"red"}
-                    data={data.rres
-                      .filter((_, _index) => _index >= index + 1)
-                      .reduce((a, b) => a + b, 0)}
-                    nextData={item}
-                    count={index + 1}
-                    key={index}
-                  />
-                )
-            )}
-          </tbody>
-        </table>
-      </div>
-    </FoldableView>
-  );
-}
+// function RedDetailViewTable({ data }) {
+//   return (
+//     <FoldableView title={"Red"}>
+//       <div>
+//         <table>
+//           <thead>
+//             <tr>
+//               <th>count</th>
+//               <th>bet</th>
+//               <th>red win</th>
+//               <th>profit</th>
+//               <th>green win</th>
+//               <th>profit</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {data.rres.map(
+//               (item, index) =>
+//                 index < 17 && (
+//                   <DetailViewItem
+//                     color={"red"}
+//                     data={data.rres
+//                       .filter((_, _index) => _index >= index + 1)
+//                       .reduce((a, b) => a + b, 0)}
+//                     nextData={item}
+//                     count={index + 1}
+//                     key={index}
+//                   />
+//                 )
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+//     </FoldableView>
+//   );
+// }
 
-function DetailViewItem({ color, count, data, nextData }) {
-  if (data === 0 && nextData === 0) return <></>;
-  const bet = data + nextData;
-  const rprofit = floatToFixed(data * 0.96 - nextData);
-  const gprofit = nextData - data;
-  return (
-    <tr>
-      <th style={{ color }}>{count}</th>
-      <td>{bet}</td>
-      <td>{data}</td>
-      <td
-        style={{
-          backgroundColor: rprofit > 0.0 ? "#800" : "transparent",
-        }}
-      >
-        {rprofit}
-      </td>
-      <td>{nextData}</td>
-      <td
-        style={{
-          backgroundColor: gprofit > 0.0 ? "#080" : "transparent",
-        }}
-      >
-        {gprofit}
-      </td>
-    </tr>
-  );
-}
+// function DetailViewItem({ color, count, data, nextData }) {
+//   if (data === 0 && nextData === 0) return <></>;
+//   const bet = data + nextData;
+//   const rprofit = floatToFixed(data * 0.96 - nextData);
+//   const gprofit = nextData - data;
+//   return (
+//     <tr>
+//       <th style={{ color }}>{count}</th>
+//       <td>{bet}</td>
+//       <td>{data}</td>
+//       <td
+//         style={{
+//           backgroundColor: rprofit > 0.0 ? "#800" : "transparent",
+//         }}
+//       >
+//         {rprofit}
+//       </td>
+//       <td>{nextData}</td>
+//       <td
+//         style={{
+//           backgroundColor: gprofit > 0.0 ? "#080" : "transparent",
+//         }}
+//       >
+//         {gprofit}
+//       </td>
+//     </tr>
+//   );
+// }
 
 function MaxStickView({ data }) {
   const [select, setSelect] = useState(["green", "red"]);
@@ -764,4 +766,132 @@ function BetCase({ data }) {
 
 export function floatToFixed(data, count = 2) {
   return Math.round(data * Math.pow(10, count)) / Math.pow(10, count);
+}
+
+function TimeDetail({ data }) {
+  const [shows, setShows] = useState(["green", "red"]);
+  const [crit, setCrit] = useState(false);
+
+  const handleClickShowCrit = () => {
+    setCrit(!crit);
+  };
+
+  const handleClickShowItem = (color) => {
+    if (shows.includes(color)) setShows(shows.filter((item) => item !== color));
+    else setShows([...shows, color]);
+  };
+
+  const convertDt2time = (dt) => {
+    const d = new Date(dt);
+    return d.getHours() * 60 * 60 + d.getMinutes() * 60 + d.getSeconds();
+  };
+
+  const dtTime2time = (data) => {
+    const sec = data % 60;
+    const min = ((data - sec) / 60) % 60;
+    const hr = (data - sec - min * 60) / 3600;
+    return `${hr}:${min}:${sec}`;
+  };
+
+  const dataTime = useMemo(() => {
+    if (data && data.length > 0) {
+      let resArray = [];
+      data.forEach((item) => {
+        if (
+          (item[0].color === "red" && item.length >= 12) ||
+          (item[0].color === "green" && item.length >= 8)
+        ) {
+          resArray.push({
+            color: item[0].color,
+            count: item.length,
+            start: convertDt2time(item[0].dt),
+            end: convertDt2time(item[item.length - 1].dt),
+          });
+        }
+      });
+      resArray.sort((a, b) => {
+        if (a.start > b.start) return 1;
+        if (a.start < b.start) return -1;
+        return 0;
+      });
+      return resArray;
+    }
+    return [];
+  }, [data]);
+
+  return (
+    dataTime &&
+    dataTime.length > 0 && (
+      <>
+        <table style={{ marginBottom: 12 }}>
+          <tr>
+            <td
+              className="td-btn"
+              style={{
+                color: shows.includes("green") ? "green" : "white",
+              }}
+              onClick={() => handleClickShowItem("green")}
+            >
+              green
+            </td>
+            <td>
+              {
+                dataTime.filter(
+                  (item) =>
+                    item.color === "green" && (crit ? item.count > 12 : true)
+                ).length
+              }
+            </td>
+            <td
+              className="td-btn"
+              style={{
+                color: shows.includes("red") ? "red" : "white",
+              }}
+              onClick={() => handleClickShowItem("red")}
+            >
+              red
+            </td>
+            <td>
+              {
+                dataTime.filter(
+                  (item) =>
+                    item.color === "red" && (crit ? item.count > 16 : true)
+                ).length
+              }
+            </td>
+            <td
+              className="td-btn"
+              style={{
+                color: crit ? "gold" : "white",
+              }}
+              onClick={handleClickShowCrit}
+            >
+              critical
+            </td>
+          </tr>
+        </table>
+        <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+          <table>
+            <tbody>
+              {dataTime.map(
+                (item, index) =>
+                  shows.includes(item.color) &&
+                  (crit
+                    ? (item.color === "green" && item.count > 12) ||
+                      (item.color === "red" && item.count > 16)
+                    : true) && (
+                    <tr key={index}>
+                      <td>{item.color}</td>
+                      <td>{item.count}</td>
+                      <td>{dtTime2time(item.start)}</td>
+                      <td>{dtTime2time(item.end)}</td>
+                    </tr>
+                  )
+              )}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )
+  );
 }
