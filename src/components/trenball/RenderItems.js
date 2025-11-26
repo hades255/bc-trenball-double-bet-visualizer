@@ -1,25 +1,23 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import { colorMap } from "../../constants";
-import FoldableView from "../FoldableView";
 import { floatToFixed } from "./Summary";
 
-export const RenderItems = ({ structuredData }) => {
+const RenderItemsMain = ({ structuredData }) => {
   return (
-    <FoldableView title={"graph view"}>
+    <div
+      style={{
+        border: "1px solid #dddddd4d",
+        padding: 10,
+      }}
+    >
       <div
         style={{
-          border: "1px solid #dddddd4d",
-          padding: 10,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "6px",
-            alignItems: "start",
-            overflowX: "auto",
-            padding: "3px 10px",
-            backgroundImage: `
+          display: "flex",
+          gap: "6px",
+          alignItems: "start",
+          overflowX: "auto",
+          padding: "3px 10px",
+          backgroundImage: `
             repeating-linear-gradient(
                 to bottom,
                 #2f2f2f,
@@ -32,27 +30,26 @@ export const RenderItems = ({ structuredData }) => {
                 #2f2f2f 52px
             )
           `,
-            backgroundSize: "100% 52px",
-          }}
-        >
-          {structuredData.map((group, colIdx) => (
-            <div
-              key={colIdx}
-              style={{
-                display: "grid",
-                gridAutoRows: "20px",
-                rowGap: "6px",
-                justifyItems: "center",
-              }}
-            >
-              {group.map((item, index) => (
-                <RenderItem key={item?.roundId || index} item={item} />
-              ))}
-            </div>
-          ))}
-        </div>
+          backgroundSize: "100% 52px",
+        }}
+      >
+        {structuredData.map((group, colIdx) => (
+          <div
+            key={colIdx}
+            style={{
+              display: "grid",
+              gridAutoRows: "20px",
+              rowGap: "6px",
+              justifyItems: "center",
+            }}
+          >
+            {group.map((item, index) => (
+              <RenderItem key={item?.roundId || index} item={item} />
+            ))}
+          </div>
+        ))}
       </div>
-    </FoldableView>
+    </div>
   );
 };
 
@@ -82,3 +79,38 @@ const RenderItem = ({ item }) => {
     />
   );
 };
+
+function RenderItems({ data }) {
+  const [open, setOpen] = useState(false);
+
+  const handleSetOpen = useCallback(() => {
+    setOpen(!open);
+  }, [open]);
+
+  return (
+    <div className="foldable-container">
+      <div className="foldable-header">
+        <button onClick={handleSetOpen} className="foldable-button">
+          <svg
+            className={`foldable-icon ${open ? "open" : ""}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+          <span className="foldable-label">graph view</span>
+        </button>
+      </div>
+
+      {open && <RenderItemsMain structuredData={data} />}
+    </div>
+  );
+}
+
+export default RenderItems;

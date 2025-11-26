@@ -142,7 +142,7 @@ export const Summary = ({ structuredData, rawData, multi }) => {
       </h3>
       <DateTimeRangeSelector onChange={handleDateTimeChange} />
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {[10, 20, 50, 100, 500, 1000, 2000, 3000].map((n) => (
+        {[10, 20, 50, 100, 500, 1000, 1500, 3000].map((n) => (
           <button
             key={n}
             onClick={() => handleLimit(n)}
