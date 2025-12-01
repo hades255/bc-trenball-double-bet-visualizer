@@ -7,6 +7,7 @@ import RenderItems from "./RenderItems";
 import TimeDetail from "./TimeDetail";
 import WinHistory from "./WinHistory";
 import "./Summary.css";
+import ConsView from "./ConsView";
 
 export const Summary = ({ structuredData, rawData }) => {
   const [current, setCurrent] = useState(0);
@@ -292,6 +293,7 @@ export const Summary = ({ structuredData, rawData }) => {
       </table>
       <WinHistory data={winHistory} />
       <MaxStickView data={limited} />
+      <ConsView data={limited} />
       {/* <DetailView data={countConsecutive} adata={limited} /> */}
       {false && rawData && (
         <ManualBet
