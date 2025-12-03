@@ -127,6 +127,7 @@ const Limbo = () => {
           min={1}
           max={100}
           step={0.01}
+          hidden
         />
       </div>
       {structuredData && (

@@ -369,7 +369,7 @@ function BetCase({ data }) {
             </p>
             <p>({floatToFixed((gres - glose * 31) * 2)})</p>
           </td>
-          <td style={{ textAlign: "left" }}>
+          <td style={{ textAlign: "left", textWrap: "nowrap" }}>
             {ghis.map((item, index) => (
               <div key={index}>{item}</div>
             ))}
