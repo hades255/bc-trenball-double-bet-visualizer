@@ -3,7 +3,7 @@ import { floatToFixed } from "./Summary";
 
 function WinHistoryMain({ data }) {
   return (
-    <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+    <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
       <table>
         <thead>
           <tr>

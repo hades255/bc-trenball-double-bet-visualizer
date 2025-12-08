@@ -8,10 +8,12 @@ import TimeDetail from "./TimeDetail";
 import WinHistory from "./WinHistory";
 import "./Summary.css";
 import ConsView from "./ConsView";
+import PeriodView from "./PeriodView";
 
 export const Summary = ({ structuredData, rawData }) => {
   const [current, setCurrent] = useState(0);
   const [filtered, setFiltered] = useState([]);
+  const [filteredRaw, setFilteredRaw] = useState([]);
   const [limit, setLimit] = useState(3000);
   const [range, setRange] = useState({ start: "", end: "" });
 
@@ -42,6 +44,20 @@ export const Summary = ({ structuredData, rawData }) => {
       setLimit(_filtered.length);
     }
   }, [structuredData, range]);
+
+  useEffect(() => {
+    if (rawData && rawData.length) {
+      const _filtered = rawData.filter((item) =>
+        item.dt
+          ? (range.start ? item.dt >= new Date(range.start).getTime() : true) &&
+            (range.end ? item.dt < new Date(range.end).getTime() : true)
+          : range.start || range.end
+          ? false
+          : true
+      );
+      setFilteredRaw(_filtered);
+    }
+  }, [rawData, range]);
 
   const handleDateTimeChange = useCallback((newRange) => {
     setCurrent(0);
@@ -295,9 +311,9 @@ export const Summary = ({ structuredData, rawData }) => {
       <MaxStickView data={limited} />
       <ConsView data={limited} />
       {/* <DetailView data={countConsecutive} adata={limited} /> */}
-      {false && rawData && (
+      {false && filteredRaw && (
         <ManualBet
-          data={rawData.filter((item) =>
+          data={filteredRaw.filter((item) =>
             item.dt
               ? (range.start
                   ? item.dt >= new Date(range.start).getTime()
@@ -310,6 +326,7 @@ export const Summary = ({ structuredData, rawData }) => {
         />
       )}
       <TimeDetail data={limited} />
+      <PeriodView data={filteredRaw} />
     </div>
   ) : (
     <div>No Data available</div>
@@ -358,16 +375,16 @@ function BetCase({ data }) {
           <td>
             <p>{greCounts}</p>
             <p>{floatToFixed(gres)}</p>
-            <p>({floatToFixed(gres * 2)})</p>
+            {/* <p>({floatToFixed(gres * 2)})</p> */}
           </td>
           <td>{">"}12</td>
           <td>{glose}*(-31)</td>
           <td>sum</td>
           <td>
-            <p style={{ fontWeight: "bold" }}>
-              {floatToFixed(gres - glose * 31)}
-            </p>
-            <p>({floatToFixed((gres - glose * 31) * 2)})</p>
+            {/* <p style={{ fontWeight: "bold" }}> */}
+            {floatToFixed(gres - glose * 31)}
+            {/* </p> */}
+            {/* <p>({floatToFixed((gres - glose * 31) * 2)})</p> */}
           </td>
           <td style={{ textAlign: "left", textWrap: "nowrap" }}>
             {ghis.map((item, index) => (

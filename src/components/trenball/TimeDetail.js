@@ -110,7 +110,7 @@ function TimeDetailMain({ data }) {
             </tr>
           </tbody>
         </table>
-        <div style={{ maxHeight: "40vh", overflowY: "auto" }}>
+        <div style={{ maxHeight: "60vh", overflowY: "auto" }}>
           <table>
             <tbody>
               {dataTime.map(
