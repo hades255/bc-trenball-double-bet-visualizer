@@ -381,9 +381,11 @@ function BetCase({ data }) {
           <td>{glose}*(-31)</td>
           <td>sum</td>
           <td>
-            {/* <p style={{ fontWeight: "bold" }}> */}
-            {floatToFixed(gres - glose * 31)}
-            {/* </p> */}
+            <p style={{ fontWeight: "bold" }}>
+              {floatToFixed(gres - glose * 31)}
+            </p>
+            <p>TOTAL</p>
+            <p>{floatToFixed(rres - overMax * 31 + gres - glose * 31)}</p>
             {/* <p>({floatToFixed((gres - glose * 31) * 2)})</p> */}
           </td>
           <td style={{ textAlign: "left", textWrap: "nowrap" }}>
