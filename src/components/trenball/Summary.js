@@ -336,57 +336,114 @@ export const Summary = ({ structuredData, rawData }) => {
 const gMulti = [0.96, 0.92, 0.84, 0.68, 0.36, -0.28];
 
 function BetCase({ data }) {
+  const [state, setState] = useState({
+    triggerGreen: 8,
+    greenMax: 12,
+    triggerRed: 10,
+    redMax: 16,
+  });
+
+  const handleChange = useCallback(
+    ({ target: { name, value } }) => setState({ ...state, [name]: value }),
+    [state]
+  );
+
   const result = useMemo(() => {
     let gres = 0;
     let greCounts = 0;
     let glose = 0;
     let ghis = [];
     data.gres.forEach((item, index) => {
-      if (index >= 7 && index < 12 && gMulti[index - 7]) {
-        const m = gMulti[index - 7] * item;
+      if (
+        index >= state.triggerGreen - 1 &&
+        index < state.greenMax &&
+        gMulti[index - (state.triggerGreen - 1)]
+      ) {
+        const m = gMulti[index - (state.triggerGreen - 1)] * item;
         gres += m;
-        ghis.push(`${gMulti[index - 7]} * ${item} = ${floatToFixed(m)}`);
+        ghis.push(
+          `${
+            gMulti[index - (state.triggerGreen - 1)]
+          } * ${item} = ${floatToFixed(m)}`
+        );
         greCounts += item;
-      } else if (index >= 12 && item) {
+      } else if (index >= state.greenMax && item) {
         glose += item;
       }
     });
     let rres = 0;
     let overMax = 0;
     data.rres.forEach((item, index) => {
-      if (index >= 16) overMax += item;
-      else if (index >= 11) rres += item;
+      if (index >= state.redMax) overMax += item;
+      else if (index >= state.triggerRed - 1) rres += item;
     });
+
     return (
       <>
         <tr>
           <td style={{ color: "red" }}>red</td>
-          <td>12{"<"}16</td>
+          <td>
+            {state.triggerRed}
+            {"~"}
+            {state.redMax}
+          </td>
           <td>{rres}</td>
-          <td>{">"}16</td>
-          <td>{overMax}*(-31)</td>
+          <td>
+            {">"}
+            {state.redMax}
+          </td>
+          <td>
+            {overMax}*(-{Math.pow(2, state.redMax - state.triggerRed + 1) - 1})
+          </td>
           <td>sum</td>
-          <td>{rres - overMax * 31}</td>
+          <td>
+            {rres -
+              overMax * (Math.pow(2, state.redMax - state.triggerRed + 1) - 1)}
+          </td>
           <td></td>
         </tr>
         <tr>
           <td style={{ color: "lightgreen" }}>green {">"}8</td>
-          <td>8{"<"}12</td>
+          <td>
+            {state.triggerGreen}
+            {"~"}
+            {state.greenMax}
+          </td>
           <td>
             <p>{greCounts}</p>
             <p>{floatToFixed(gres)}</p>
             {/* <p>({floatToFixed(gres * 2)})</p> */}
           </td>
-          <td>{">"}12</td>
-          <td>{glose}*(-31)</td>
+          <td>
+            {">"}
+            {state.greenMax}
+          </td>
+          <td>
+            {glose}*(-{Math.pow(2, state.greenMax - state.triggerGreen + 1) - 1}
+            )
+          </td>
           <td>sum</td>
           <td>
-            <p style={{ fontWeight: "bold" }}>
-              {floatToFixed(gres - glose * 31)}
-            </p>
-            <p>TOTAL</p>
-            <p>{floatToFixed(rres - overMax * 31 + gres - glose * 31)}</p>
-            {/* <p>({floatToFixed((gres - glose * 31) * 2)})</p> */}
+            <div style={{ fontWeight: "bold" }}>
+              {floatToFixed(
+                gres -
+                  glose *
+                    (Math.pow(2, state.greenMax - state.triggerGreen + 1) - 1)
+              )}
+            </div>
+            <div>TOTAL</div>
+            <div>(G+R)</div>
+            <div>
+              {floatToFixed(
+                (rres -
+                  overMax *
+                    (Math.pow(2, state.redMax - state.triggerRed + 1) - 1)) /
+                  Math.pow(2, state.redMax - state.triggerRed - 4) +
+                  gres -
+                  glose *
+                    (Math.pow(2, state.greenMax - state.triggerGreen + 1) - 1)
+              )}
+            </div>
           </td>
           <td style={{ textAlign: "left", textWrap: "nowrap" }}>
             {ghis.map((item, index) => (
@@ -396,9 +453,97 @@ function BetCase({ data }) {
         </tr>
       </>
     );
-  }, [data]);
+  }, [data, state]);
 
-  return <>{result}</>;
+  return (
+    <>
+      <tr>
+        <td></td>
+      </tr>
+      <tr>
+        <td>green start</td>
+        <td>
+          <input
+            name="triggerGreen"
+            value={state.triggerGreen}
+            onChange={handleChange}
+            style={{
+              width: 60,
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              textAlign: "center",
+            }}
+            type="number"
+            min={1}
+            max={20}
+            step={1}
+          />
+        </td>
+        <td>end</td>
+        <td>
+          <input
+            name="greenMax"
+            value={state.greenMax}
+            onChange={handleChange}
+            style={{
+              width: 60,
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              textAlign: "center",
+            }}
+            type="number"
+            min={1}
+            max={20}
+            step={1}
+          />
+        </td>
+        <td>red start</td>
+        <td>
+          <input
+            name="triggerRed"
+            value={state.triggerRed}
+            onChange={handleChange}
+            style={{
+              width: 60,
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              textAlign: "center",
+            }}
+            type="number"
+            min={1}
+            max={20}
+            step={1}
+          />
+        </td>
+        <td>end</td>
+        <td>
+          <input
+            name="redMax"
+            value={state.redMax}
+            onChange={handleChange}
+            style={{
+              width: 60,
+              backgroundColor: "transparent",
+              border: "none",
+              color: "white",
+              textAlign: "center",
+            }}
+            type="number"
+            min={1}
+            max={20}
+            step={1}
+          />
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+      </tr>
+      {result}
+    </>
+  );
 }
 
 export function floatToFixed(data, count = 2) {
